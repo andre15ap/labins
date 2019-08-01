@@ -1,0 +1,29 @@
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  Deletar Turma | {{ block.super }}
+{% endblock %}
+
+{% block conteudo %}
+
+	<form method="post">
+	{% csrf_token %}
+	
+		<h3>Deseja Realmente Excluir a Turma Abaixo?</h3>
+		<h2>{{object}} </h2>
+
+		<button class="btn btn-danger" type="submit">
+				<i class="material-icons icone_medio">delete_forever</i> 
+				<span class="icone_medio">Deletar</span>
+			{% comment %} <i class="material-icons icone_pequeno">delete_forever</i> Excluir {% endcomment %}
+		</button>
+		<a class="btn btn-light" href="javascript:window.history.go(-1)">
+				<i class="material-icons">reply</i>
+				<span class="icone_medio">Cancelar</span>
+			{% comment %} <i class="material-icons icone_pequeno">cancel_presentation</i>Cancelar</a> {% endcomment %}
+
+	</form>
+
+
+{% endblock%}

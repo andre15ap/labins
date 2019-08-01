@@ -1,0 +1,84 @@
+{% extends "base/base.html" %}
+
+{% load atividades_tags %}
+
+{% block title %}
+  Reservas | {{ block.super }}
+{% endblock %}
+
+
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Minhas Reservas</li>
+{% endblock %}
+
+
+{% block conteudo %}
+
+{% include 'uteis/mensagens.html' %}
+<div class="row">
+  <div class="col-md-10">
+    <h2>
+      <a href="{% url 'contas:index' %}" class="btn btn-outline-primary btn-sm">
+        <i class="material-icons">reply</i>
+      </a> 
+      Minhas Reservas {% if turma %} da turma: {{turma.nome}} {% else %} de todas as turmas {% endif %}
+    </h2>
+  </div>
+  <div class="col-md-2">
+    {% if turma %}
+      <a class="btn btn-outline-success" href="{% url 'atividade:nova_reserva' turma.id %}">Criar Reservas</a>
+    {% endif %}
+  </div>
+	<hr \>
+
+<h5>{{no_reserva}}</h5>
+
+<div class="row">
+{% for reserva in reservas %}
+  
+<div class="card card_reserva" style="width: 10rem;">
+  
+  	<div class="card-body">
+    	<h5 class="card-title">{{reserva}}</h5>
+		<p class="card-text">{{reserva.turma}}</p>
+    	<h6 class="card-subtitle mb-2 text-muted">{{reserva.espaco}}</h6>
+    	<h6 class="card-subtitle mb-2 text-muted">{{reserva.dia|dia_semana}}</h6>
+		<button id="cancelar" onClick="remover_reserva_js('{{reserva.id}}')" class="btn btn-outline-secondary btn-sm">Cancelar</button>
+	</div>
+</div>
+
+{% endfor%}
+</div>
+	
+
+<script>
+function remover_reserva_js(id){
+    valor = id; 
+	request_url = "{% url 'atividade:reserva_remover_ajax' user.id %}";
+    request_url = request_url.replace("{{user.id}}", valor);   
+    
+	
+	$.ajax({
+        url: request_url,
+        type: 'get',
+        dataType: 'json',
+        beforeSend: function () {
+      },
+        //OCORREU TUDO CERTO NA REQUISIÇÃO
+        success: function (data) {
+          //FOI DESATIVADO
+          if (data.removel){
+			 location.reload();
+          }else{
+            
+          }
+         
+          
+      }
+    });
+
+};
+</script>
+{% endblock %}

@@ -1,0 +1,189 @@
+{% extends "base/base.html" %}
+
+{% block title %}
+  Lista Momento | {{ block.super }}
+{% endblock %}
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'atividade:gerencia' %}">Gerenciar</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Listar Campus</li>
+{% endblock %}
+
+
+{% block conteudo %}
+
+{% include 'uteis/mensagens.html' %}
+
+<div class="row">
+    <div class="col-12 col-md-10">
+        <h3>
+            <a href="{% url 'atividade:gerencia' %}" class="btn btn-outline-primary btn-sm">
+                  <i class="material-icons">reply</i>
+            </a>
+          &nbsp;
+          Lista de Momentos
+        </h3>
+    </div>
+
+  <div class="col-12 col-md-2">
+    <a href="{% url 'academico:novo_momento'%}" class="btn btn-success">Novo</a>
+  </div>
+</div>
+
+
+
+<table class="table table-hover table-sm table-responsive w-100 d-block d-md-table">
+  <thead>
+    <tr>
+      <th scope="col">Identificador</th>
+      <th scope="col">Inicio</th>
+      <th scope="col">Termino</th>
+      <th scope="col">Status</th>
+      <th scope="col">Editar</th>
+      <th scope="col">Desativar</th>
+    </tr>
+  </thead>
+  <tbody>
+
+{% for momento in object_list %}
+	<tr>
+      <td>{{momento.identificador}}</td>
+      <td>{{momento.inicio|date:"d/m/Y"}}</td>
+      <td>{{momento.termino|date:"d/m/Y"}}</td>
+      
+      {% if momento.ativo %}
+      
+      <td><span class="badge badge-success"> Ativo</span>
+      </td>
+
+      <td>
+      	<a class="btn btn-outline-primary btn-sm" href="{% url 'academico:editar_momento' momento.id %}">
+          <i class="material-icons icone_pequeno">
+            edit
+          </i>
+        </a>
+      </td>
+      <td>
+        <a class="btn btn-outline-danger btn-sm" onClick="limpar('{{momento.id}}')" data-toggle="modal" data-target="#modal-{{momento.id}}">
+          <i class="material-icons icone_pequeno">
+            close
+          </i>
+        </a>
+
+        <!-- ########################## modal ######################-->
+        <div class="modal fade" id="modal-{{momento.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Desativar Momento <span class="negrito">{{momento.identificador}}</span></h5>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form class="form">
+                <h5>Tem certeza que deseja Desativar o Momento?</h5>
+                
+                <h6>Copie e cole o valor abaixo para confirmar</h6>
+                <h5>{{momento.id}}</h5>
+                <input id="input-{{momento.id}}" class="form-control input-entrada" type="text" name="id-momento"/>
+                </form>
+                <p>
+                <div class="div-saida">
+
+                </div>
+                </p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button id="btn-confirme" onClick="desativar_momento_js('{{momento.id}}')" type="button" class="btn btn-danger js-mudar">Desativar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- ################ fim modal ##################-->
+      </td>
+
+      {% else %}
+        <td><span class="badge badge-dark">Inativo</span>
+        </td>
+        <td>
+        <button disabled class="btn btn-outline-primary btn-sm">
+          <i class="material-icons icone_pequeno">
+            edit
+          </i>
+          </button>
+        </td>
+        <td>
+        <button disabled class="btn btn-outline-danger btn-sm">
+          <i class="material-icons icone_pequeno">
+            close
+          </i>
+          </button>
+        </td>
+       {% endif %}
+    </tr>
+{% endfor %}
+
+  </tbody>
+</table>
+
+
+
+<script type="text/javascript">
+
+function limpar(id){
+   $('.div-saida').html('');
+   $('#input-'+id).val('');
+}
+
+
+function desativar_momento_js(id){
+      var input_entrada = $('#input-'+id).val();
+      //VERIFICA SE O ID DIGITADO NO INPUT ESTA CERTO
+      if (input_entrada != id ){
+        var html = '<div class="alert alert-danger" role="alert">';
+        html += 'Valor digitado incorreto!';
+        html += '</div>';
+        $('.div-saida').html(html);
+        return;
+      }
+      //TRES LINHAS PARA REMOVER O ID TEMPORARIO E COLOCAR O CERTO
+      valor = id;         
+      request_url = "{% url 'academico:desativar_momento_ajax' user.id %}"
+      request_url = request_url.replace('{{user.id}}',valor);
+    
+      $.ajax({
+        url: request_url,
+        type: 'get',
+        dataType: 'json',
+        beforeSend: function () {
+      },
+        //OCORREU TUDO CERTO NA REQUISIÇÃO
+        success: function (data) {
+          var html;
+          //FOI DESATIVADO
+          if (data.dependencia_turma){
+            //NÃO FOI DESATIVADO, EXISTEM PENDENCIAS
+            html = '<h5 class="alert alert-danger" role="alert">Não foi possivel desativar o momento!</h5>'
+            html += '<h6>Existem as sequintes Dependencias ativas.</h6>'
+            $.each(data.turma_list , function(key, value){
+              req_url = "{% url 'atividade:detalhar_turma' user.id %}"
+              req_url = req_url.replace('{{user.id}}',value.id);
+              html += '<p>Turma: <a class="negrito" href='+req_url+'>'+value.turma+'</a><p>'
+              });
+          }else{              
+            html = '<h5 class="alert alert-success" role="alert">Desativada com sucesso!</h5>';
+            location.reload();
+          }
+         //SETA A MENSAGEM DE SAIDA NA DIV
+          $('.div-saida').html(html);
+          
+      }
+    });
+}
+</script>
+	
+{% endblock %}

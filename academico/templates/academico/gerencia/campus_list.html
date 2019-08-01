@@ -1,0 +1,189 @@
+{% extends "base/base.html" %}
+
+{% block title %}
+  Lista de Campus | {{ block.super }}
+{% endblock %}
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'atividade:gerencia' %}">Gerenciar</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Listar Campus</li>
+{% endblock %}
+
+{% block conteudo %}
+
+{% include 'uteis/mensagens.html' %}
+
+<div class="row">
+    <div class="col-12 col-md-10">
+        <h3>
+            <a href="{% url 'atividade:gerencia' %}" class="btn btn-outline-primary btn-sm">
+                  <i class="material-icons">reply</i>
+            </a>
+          &nbsp;
+          Lista de Campus
+        </h3>
+    </div>
+    <div class="col-12 col-md-2">
+        <a href="{% url 'academico:novo_campus'%}" class="btn btn-success">Novo</a>
+    </div>
+</div>
+
+
+
+<table class="table table-hover table-sm table-responsive w-100 d-block d-md-table">
+  <thead>
+    <tr>
+      <th scope="col">Nome</th>
+      <th scope="col">Descrição</th>
+      <th scope="col">Status</th>
+      <th scope="col">Editar</th>
+      <th scope="col">Desativar</th>
+    </tr>
+  </thead>
+  <tbody>
+
+{% for campus in object_list %}
+	<tr>
+      <td>{{campus.nome}}</td>
+      <td>{{campus.descricao}}</td>
+      {% if campus.ativo %}
+      <td><span class="badge badge-success">Ativo</span></td>
+      
+      <td>
+      	<a class="btn btn-outline-primary btn-sm" href="{% url 'academico:editar_campus' campus.id %}">
+          <i class="material-icons icone_pequeno">
+            edit
+          </i>
+        </a>
+      </td>
+      <td>
+        <a class="btn btn-outline-danger btn-sm" onClick="limpar('{{campus.id}}')" data-toggle="modal" data-target="#modal-{{campus.id}}">
+          <i class="material-icons icone_pequeno">
+            close
+          </i>
+        </a>
+
+        <!-- ########################## modal ######################-->
+        <div class="modal fade" id="modal-{{campus.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Desativar Campus <span class="negrito">{{campus.identificador}}</span></h5>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form class="form">
+                <h5>Tem certeza que deseja Desativar o Campus?</h5>
+                
+                <h6>Copie e cole o valor abaixo para confirmar</h6>
+                <h5>{{campus.id}}</h5>
+                <input id="input-{{campus.id}}" class="form-control input-entrada" type="text" name="id-campus"/>
+                </form>
+                <p>
+                <div class="div-saida">
+
+                </div>
+                </p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button id="btn-confirme" onClick="desativar_campus_js('{{campus.id}}')" type="button" class="btn btn-danger">Desativar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- ################ fim modal ##################-->
+      </td>
+
+      {% else %}
+
+        <td><span class="badge badge-dark">Inativo</span></td>
+        <td>
+        <button disabled class="btn btn-outline-primary btn-sm">
+          <i class="material-icons icone_pequeno">
+            edit
+          </i>
+          </button>
+        </td>
+        <td>
+        <button disabled class="btn btn-outline-danger btn-sm">
+          <i class="material-icons icone_pequeno">
+            close
+          </i>
+          </button>
+        </td>
+
+      {% endif %}
+    </tr>
+{% endfor %}
+
+  </tbody>
+</table>
+
+
+<script type="text/javascript">
+
+function limpar(id){
+   $('.div-saida').html('');
+   $('#input-'+id).val('');
+}
+
+
+function desativar_campus_js(id){
+      var input_entrada = $('#input-'+id).val();
+      //VERIFICA SE O ID DIGITADO NO INPUT ESTA CERTO
+      if (input_entrada != id ){
+        var html = '<div class="alert alert-danger" role="alert">';
+        html += 'Valor digitado incorreto!';
+        html += '</div>';
+        $('.div-saida').html(html);
+        return;
+      }
+      
+      //TRES LINHAS PARA REMOVER O ID TEMPORARIO E COLOCAR O CERTO
+      valor = id;         
+      request_url = "{% url 'academico:desativar_campus_ajax' user.id %}"
+      request_url = request_url.replace('{{user.id}}',valor);
+    
+      $.ajax({
+        url: request_url,
+        type: 'get',
+        dataType: 'json',
+        beforeSend: function () {
+      },
+        //OCORREU TUDO CERTO NA REQUISIÇÃO
+        success: function (data) {
+          var html;
+          //FOI DESATIVADO
+          if (data.dependencia_predio || data.dependencia_curso_setor){
+            html = '<h5 class="alert alert-danger" role="alert">Não foi possivel desativar o Campus!</h5>'
+            html += '<h6>Existem as sequintes Pendencias.</h6>'
+            $.each(data.predio_list , function(key, value){
+              req_url = "{% url 'academico:listar_predio' %}"
+              //req_url = req_url.replace('{{user.id}}',value.id);
+              html += '<p>Predio: <a class="negrito" href='+req_url+'>'+value.predio+'</a><p>'
+              });
+
+            
+            $.each(data.curso_setor_list , function(key, value){
+              req_url = "{% url 'academico:listar_curso_setor' %}"
+              //req_url = req_url.replace('{{user.id}}',value.id);
+              html += '<p>Curso/Setor: <a class="negrito" href='+req_url+'>'+value.curso_setor+'</a><p>'
+              });
+          }else{
+            html = '<h5 class="alert alert-success" role="alert">Desativada com sucesso!</h5>';
+            location.reload();
+          }
+         //SETA A MENSAGEM DE SAIDA NA DIV
+          $('.div-saida').html(html);
+          
+      }
+    });
+}
+</script>
+	
+{% endblock %}

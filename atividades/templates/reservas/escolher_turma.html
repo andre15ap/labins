@@ -1,0 +1,45 @@
+{% extends "base/base.html" %}
+
+{% load atividades_tags %}
+
+{% block title %}
+  Listar Turmas | {{ block.super }}
+{% endblock %}
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Turmas</li>
+{% endblock %}
+
+{% block conteudo %}
+
+{% include 'uteis/mensagens.html' %}
+
+
+<div class="row">
+    <div class="col-12 col-md-10">
+        <h3>
+            <a href="{% url 'contas:index' %}" class="btn btn-outline-primary btn-sm">
+                  <i class="material-icons">reply</i>
+            </a>
+          &nbsp;
+          Escolha a Turma para visualisar as reservas
+        </h3>
+    </div>
+    <div class="col-12 col-md-2">
+        {% comment %} <a class="btn btn-success" href="{% url 'atividade:nova_turma' pk %}"> Nova Turma</a> {% endcomment %}
+    </div>
+</div>
+
+
+<br><br>
+<div class="row">
+{% for turma in turmas %}
+<div class="col-md-2">
+    <a class="btn btn-primary" href="{% url 'atividade:index_reservas' turma.id %}"> {{turma.nome}}</a>
+</div>
+{% endfor %}
+</div>
+
+
+{% endblock %}

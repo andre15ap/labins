@@ -1,0 +1,277 @@
+
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  Gerencia | {{ block.super }}
+{% endblock %}
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Gerenciar</li>
+{% endblock %}
+
+{% block conteudo %}
+
+{% include 'uteis/mensagens.html' %}
+
+{% if user.permissao_suporte %}
+	<div class="row">
+		<div class="col-12">
+			<h3>
+				<a href="{% url 'contas:index' %}" class="btn btn-outline-primary btn-sm">
+					<i class="material-icons">reply</i>
+				</a>
+			&nbsp;
+			Area de Gerencia
+			</h3>
+		</div>
+	</div>
+
+	{% comment %} ACADEMICO {% endcomment %}
+<br>
+<div class="card">
+  <h5 class="card-header">Academico</h5>
+  <div class="card-body">
+	<ul class="list-group list-group-flush">
+		<li class="list-group-item">
+			<div class="row">
+		  		<div class="col-md-8 col-12">
+				  <h5>Momentos</h5>
+				</div>
+		  		<div class="col-md-2 col-6">
+				<a href="{% url 'academico:novo_momento' %}" class="btn btn-success">
+					<i class="material-icons icone_pequeno">library_add</i>
+					<span class="">Adicionar</span>
+				</a>
+				</div>
+				<div class="col-md-2 col-6">
+					<a href="{% url 'academico:listar_momento' %}" class="btn btn-primary">
+						<i class="material-icons icone_pequeno">assignment</i>
+						Listar
+					</a>
+				</div>
+		  	</div>
+		</li>
+
+		<li class="list-group-item">
+			<div class="row">
+				<div class="col-md-8 col-12"><h5>Campus</h5></div>
+				<div class="col-md-2 col-6">
+					<a href="{% url 'academico:novo_campus' %}" class="btn btn-success">
+					   <i class="material-icons icone_pequeno">library_add</i>
+					   <span class="">Adicionar</span>
+					 </a>
+				</div>
+				<div class="col-md-2 col-6">
+					<a href="{% url 'academico:listar_campus' %}" class="btn btn-primary">
+					   <i class="material-icons icone_pequeno">assignment</i>
+					   Listar
+				   </a>
+				</div>
+			</div>
+		</li>
+	</div>
+</div>
+<br>
+<div class="card">
+  	<h5 class="card-header">Espaços Fisicos</h5>
+  	<div class="card-body">
+	  <ul class="list-group list-group-flush">
+		<li class="list-group-item">
+			<div class="row">
+				<div class="col-md-8 col-12"><h5>Prédios</h5></div>
+				<div class="col-md-2 col-6">
+					<a href="{% url 'academico:novo_predio' %}" class="btn btn-success">
+					   <i class="material-icons icone_pequeno">library_add</i>
+					   <span class="">Adicionar</span>
+					</a>
+				</div>
+				<div class="col-md-2 col-6">
+					<a href="{% url 'academico:listar_predio' %}" class="btn btn-primary">
+					   <i class="material-icons icone_pequeno">assignment</i>
+					   Listar
+				   </a>
+				 </div>
+			</div>
+		</li>
+
+		<li class="list-group-item">
+			<div class="row">
+				<div class="col-md-8 col-12"><h5>Salas</h5></div>
+				<div class="col-md-2 col-6">
+					<a href="{% url 'academico:novo_sala' %}" class="btn btn-success">
+					   <i class="material-icons icone_pequeno">library_add</i>
+					   <span class="">Adicionar</span>
+					</a>
+				</div>
+				<div class="col-md-2 col-6">
+				   	<a href="{% url 'academico:listar_sala' %}" class="btn btn-primary">
+					   <i class="material-icons icone_pequeno">assignment</i>
+					   Listar
+				   	</a>
+				 </div>
+			 </div>
+		</li>
+			
+		<li class="list-group-item">
+			<div class="row">
+				<div class="col-md-8 col-12"><h5>Espaços</h5></div>
+				<div class="col-md-2 col-6">
+					<a href="{% url 'academico:novo_espaco' %}" class="btn btn-success">
+					   <i class="material-icons icone_pequeno">library_add</i>
+					   <span class="">Adicionar</span>
+					</a>
+				</div>
+				<div class="col-md-2 col-6">
+				   	<a href="{% url 'academico:listar_espaco' %}" class="btn btn-primary">
+					   <i class="material-icons icone_pequeno">assignment</i>
+					   Listar
+					</a>
+				</div>
+			</div>
+		</li>	 
+		
+	</ul>
+</div>
+</div>
+<br>
+<div class="card">
+  	<h5 class="card-header">Disciplinas/Atividades</h5>
+  	<div class="card-body">
+		<ul class="list-group list-group-flush">
+		<li class="list-group-item">
+			<div class="row">
+				<div class="col-md-8 col-12"><h5>Tipo de Disciplina/Atividade</h5></div>
+				<div class="col-md-2 col-6">
+					<a href="{% url 'atividade:novo_tipo_atividade' %}" class="btn btn-success">
+						<i class="material-icons icone_pequeno">library_add</i>
+						<span class="">Adicionar</span>
+					</a>
+				</div>
+				<div class="col-md-2 col-6">
+					<a href="{% url 'atividade:listar_tipo_atividade' %}" class="btn btn-primary">
+						<i class="material-icons icone_pequeno">assignment</i>
+						Listar
+					</a>
+				</div>
+			</div>
+		</li>
+
+
+		<li class="list-group-item">
+			<div class="row">
+		  		<div class="col-md-8 col-12"><h5>Sistemas Operacionais</h5></div>
+		  		<div class="col-md-2 col-6">
+			  		<a href="{% url 'atividade:novo_sistema' %}" class="btn btn-success">
+						<i class="material-icons icone_pequeno">library_add</i>
+						<span class="">Adicionar</span>
+					</a>
+				</div>
+				<div class="col-md-2 col-6">
+			    	<a href="{% url 'atividade:listar_sistema' %}" class="btn btn-primary">
+						<i class="material-icons icone_pequeno">assignment</i>
+						Listar
+					</a>
+		  		</div>
+		  	</div>
+		</li>
+
+		<li class="list-group-item">
+			<div class="row">
+				 <div class="col-md-8 col-12"><h5>Softwares</h5></div>
+				 <div class="col-md-2 col-6">
+					<a href="{% url 'atividade:novo_software' %}" class="btn btn-success">
+					   <i class="material-icons icone_pequeno">library_add</i>
+					   <span class="">Adicionar</span>
+					 </a>
+				</div>
+				<div class="col-md-2 col-6">
+				   	<a href="{% url 'atividade:listar_software' %}" class="btn btn-primary">
+					   <i class="material-icons icone_pequeno">assignment</i>
+					   Listar
+				   	</a>
+				 </div>
+			</div>
+		</li>
+	</ul>
+</div>
+</div>
+<br>
+<div class="card">
+  	<h5 class="card-header">Solicitantes</h5>
+  	<div class="card-body">
+		<ul class="list-group list-group-flush">
+
+		<li class="list-group-item">
+			<div class="row">
+				<div class="col-md-8 col-12"><h5>Tipo de Solicitante</h5></div>
+				<div class="col-md-2 col-6">
+					<a href="{% url 'contas:novo_tipo_solicitante' %}" class="btn btn-success">
+						<i class="material-icons icone_pequeno">library_add</i>
+						<span class="">Adicionar</span>
+					</a>
+				</div>
+				<div class="col-md-2 col-6">
+					<a href="{% url 'contas:listar_tipo_solicitante' %}" class="btn btn-primary">
+						<i class="material-icons icone_pequeno">assignment</i>
+						Listar
+					</a>
+				</div>
+			</div>
+		</li>
+
+		<li class="list-group-item">
+			<div class="row">
+				<div class="col-md-8 col-12"><h5>Cursos e Setores</h5></div>
+				<div class="col-md-2 col-6">
+					<a href="{% url 'academico:novo_curso_setor' %}" class="btn btn-success">
+						<i class="material-icons icone_pequeno">library_add</i>
+						<span class="">Adicionar</span>
+					</a>
+				</div>
+				<div class="col-md-2 col-6">
+					<a href="{% url 'academico:listar_curso_setor' %}" class="btn btn-primary">
+						<i class="material-icons icone_pequeno">assignment</i>
+						Listar
+					</a>	 
+				</div>
+			</div>
+		</li>
+		</ul>
+	</div>
+</div>
+<br>
+<div class="card">
+  	<h5 class="card-header">Avisos</h5>
+  	<div class="card-body">
+		<ul class="list-group list-group-flush">
+
+		<li class="list-group-item">
+			<div class="row">
+				<div class="col-md-8 col-12"><h5>Imagem de Avisos</h5></div>
+				<div class="col-md-2 col-6">
+					<a href="{% url 'atividade:foto_aviso' %}" class="btn btn-success">
+						<i class="material-icons icone_pequeno">library_add</i>
+						<span class="">Adicionar</span>
+					</a>
+				</div>
+				<div class="col-md-2 col-6">
+					<a href="{% url 'atividade:foto_aviso' %}" class="btn btn-primary">
+						<i class="material-icons icone_pequeno">assignment</i>
+						Listar
+					</a>
+				</div>
+			</div>
+		</li>
+
+		</ul>
+	</div>
+</div>
+	
+	
+	{% else %}
+	<h2>Sem permissão para acessar essa página</h2>
+	{% endif %}
+
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  Deletar Foto | {{ block.super }}
+{% endblock %}
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'atividade:gerencia' %}">Gerenciar</a></li>
+    {% if object.espaco %}
+    <li class="breadcrumb-item"><a href="{% url 'academico:listar_espaco' %}">Listar Espaços</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'academico:fotos_espaco' object.espaco.id %}">Fotos: {{object.espaco}}</a></li>
+    {% else %}
+    <li class="breadcrumb-item"><a href="{% url 'academico:listar_predio' %}">Listar Prédios</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'academico:fotos_predio' object.predio.id %}">Fotos: {{object.predio}}</a></li>
+    {% endif %}
+    <li class="breadcrumb-item active" aria-current="page">Apagar Foto</li>
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="row">
+	<form method="post">
+	{% csrf_token %}
+        {% if object.espaco %}
+        <h4>Deseja Realmente Excluir a Foto do(a) <span class="negrito">{{object.espaco}}</span> Abaixo ?</h4>
+        {% else %}    
+        <h4>Deseja Realmente Excluir a Foto do(a) <span class="negrito">{{object.predio}}/span> Abaixo ?</h4>
+        {% endif %}
+
+        <div class="row justify-content-center margin_inferior">
+            <div class="col-12">
+                <img class="img-fluid img-thumbnail" src="{{ object.foto.url }}" width="350" height="300" class="d-inline-block align-top" alt=""/>
+            </div>
+        </div>
+                
+      
+
+        <div class="row">
+            <div class="col-12">
+
+                <button class="btn btn-outline-danger" type="submit">
+                        <i class="material-icons icone_medio">delete_forever</i> 
+                        <span class="icone_medio">Deletar</span>
+                    </button>
+                    <a class="btn btn-light" href="javascript:window.history.go(-1)">
+                        <i class="material-icons">reply</i>
+                        <span class="icone_medio">Cancelar</span>
+                    </a>
+            </div>
+        </div>
+		
+
+	</form>
+</div>
+
+{% endblock%}

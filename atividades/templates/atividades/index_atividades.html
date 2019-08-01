@@ -1,0 +1,22 @@
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  atividades | {{ block.super }}
+{% endblock %}
+
+{% block conteudo %}
+
+	<div class="row">
+		<div class="col-md-6"><h2>Atividades</h2></div>
+		<div class="col-md-6">
+			<a href="{% url 'atividade:nova_atividade' %}" type="button" class="btn btn-primary">Nova Atividade</a>
+		</div>
+	</div>
+	
+	<hr \>
+
+
+
+	
+{% endblock %}

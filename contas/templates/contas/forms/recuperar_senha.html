@@ -1,0 +1,25 @@
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  recuperar senha | {{ block.super }}
+{% endblock %}
+
+{% block entrar %} {% endblock %}
+
+{% block conteudo %}
+
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6">
+            <h3>
+                {% include 'uteis/botao_voltar.html' %}
+                &nbsp;
+                Recuperar senha
+            </h3>
+        </div>
+    </div>
+    {% include 'uteis/form_padrao.html' %}
+
+
+{% endblock %}

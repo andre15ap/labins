@@ -1,0 +1,61 @@
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  Detalhar Atividade | {{ block.super }}
+{% endblock %}
+
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Atividade Detalhar</li>
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+  <div class="card-header">
+   <h3> 
+
+    {% include 'uteis/botao_voltar.html' %}
+   &nbsp; {{object}}
+  </h3>
+  </div>
+  <div class="card-body">
+    <h5 class="card-title"><span class=negrito ">Descrição:</span> {{object.descricao}}</h5>
+    <p class="card-text"> <span class=negrito ">Solicitante:</span>  {{object.solicitante}}</p>
+    <p class="card-text"> <span class=negrito ">Tipo de Atividade:</span> {{object.tipo_atividade}}</p>
+    <p class="card-text"> <span class=negrito ">Curso ou Setor:</span> {{object.curso_setor}}</p>
+ 
+    
+    <p class="card-text">
+    {% if atividade.ativo %}
+        <span class=negrito ">Status:</span> <span id="mgs-situacao" class="badge badge-success"> Ativa </span>
+    {% else %}
+        <span class=negrito ">Status:</span> <span id="mgs-situacao" class="badge badge-dark">Inativa </span>
+    {% endif %}
+    </p>
+
+    <p class="card-text">
+    {% if atividade.liberada %}
+        <span class=negrito ">Liberada?:</span> <span id="mgs-situacao" class="badge badge-success"> Liberada </span>
+    {% else %}
+        <span class=negrito ">Liberada?:</span> <span id="mgs-situacao" class="badge badge-dark"> Não Liberada </span>
+    {% endif %}
+    </p>
+  
+    
+    {% if object.solicitante.id == user.id %}
+     <a href="{% url 'atividade:atividade_update' object.id %}" class="btn btn-primary">Editar</a>
+      {% comment %} <a href="{% url 'atividade:atividade_delete' object.id %}" class="btn btn-danger">Desativar</a> {% endcomment %}
+    {% endif %}
+
+  </div>
+</div>
+  </div>
+</div>
+
+	
+{% endblock %}

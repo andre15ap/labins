@@ -1,0 +1,22 @@
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  formulário Turma | {{ block.super }}
+{% endblock %}
+
+{% block conteudo %}
+	{% if object.status %}
+	<h2>{% include 'uteis/botao_voltar.html' %} Editar {{object}}</h2>
+	{% else %}
+	<h2>{% include 'uteis/botao_voltar.html' %}  Nova Turma para {{atividade}}</h2>
+	{% endif %}
+	<hr \>
+  
+{% include 'uteis/mensagens.html'%}
+
+{% include 'uteis/form_padrao.html'%}
+
+{% comment %} <a href="#" class='btn btn-primary'>Solicitar Software</a> {% endcomment %}
+	
+{% endblock %}

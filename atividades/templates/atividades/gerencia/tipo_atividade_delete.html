@@ -1,0 +1,29 @@
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  Deletar Tipo Atividade | {{ block.super }}
+{% endblock %}
+
+{% block conteudo %}
+
+	<form method="post">
+	{% csrf_token %}
+	
+		<h3>Deseja Realmente Excluir o tipo Atividade</h3>
+		<h2> [ {{object}} ] ? </h2>
+
+		<button class="btn btn-outline-danger" type="submit">
+            <i class="material-icons icone_medio">delete_forever</i> 
+            <span class="icone_medio">Deletar</span>
+        </button>
+        
+        <a class="btn btn-light" href="{% url 'atividade:listar_tipo_atividade' %}">
+            <i class="material-icons">reply</i>
+            <span class="icone_medio">Cancelar</span>
+        </a>
+
+	</form>
+
+
+{% endblock%}

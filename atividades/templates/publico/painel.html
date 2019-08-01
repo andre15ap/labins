@@ -1,0 +1,103 @@
+{% extends "base/base.html" %}
+
+{% block entrar%}
+<a class="nav-item nav-link" href="{% url 'contas:index' %}">Entrar</a>
+{% endblock %}
+
+{% load atividades_tags %}
+
+{% block title %}
+  Painel Público | {{ block.super }}
+{% endblock %}
+
+{% block navegar %}
+    {% comment %} <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{object}}</li> {% endcomment %}
+{% endblock %}
+
+{% block conteudo %}
+
+<h2> Pesquisar espaços livres por data </h2>
+<form class="form-inline" method="post">
+{% csrf_token %}
+  <label class="sr-only" for="inlineFormInputName2">Inicio</label>
+  <div class="input-group mb-2 mr-sm-2">
+  {{form.inicio}}
+  </div>
+
+  <label class="sr-only" for="inlineFormInputGroupUsername2">Fim</label>
+  <div class="input-group mb-2 mr-sm-2">
+   {{form.fim}}
+  </div>
+
+  <label class="sr-only" for="inlineFormInputGroupUsername2">Espaco</label>
+  <div class="input-group mb-2 mr-sm-2">
+   {{form.espaco}}
+  </div>
+
+  <button type="submit" class="btn btn-primary mb-2">Pesquisar</button>
+</form>
+
+<div class="row">
+    <div class="col">
+        {% if espaco %}
+        <h3> {{espaco}}  -- De {{inicio}}  à  {{fim}}</h3>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+{% for dia in dias %}
+  <div class="card card_reserva" style="width: 15rem;">
+  
+  <div class="card-body">
+    <h5 class="card-title">{{dia.dia.day}}/{{dia.dia.month}}/{{dia.dia.year}}</h5>
+    <h6 class="card-subtitle mb-2 text-muted">{{dia.dia|dia_semana}}</h6>
+
+      <div class="custom-control my-1 mr-sm-2">
+      {% if dia.Manha %} 
+        <span class="verde negrito"> Manhã - Livre</span>
+      {% else %}
+        <span style="font-size:15px; color:#0e7293;" class="negrito"> Manhã: {{dia|reserva_dia:espaco}} </span>
+      {% endif %}
+      </div>
+
+      <div class="custom-control  my-1 mr-sm-2">
+        {% if dia.Tarde %} 
+        <span class="verde negrito"> Tarde - Livre</span>
+      {% else %}
+        <span style="font-size:15px; color:#1d2077;" class="negrito"> Tarde: {{dia|reserva_dia:espaco}} </span>
+      {% endif %}
+      </div>
+
+      <div class="custom-control my-1 mr-sm-2">
+        {% if dia.Noite %} 
+        <span class="verde negrito"> Noite - Livre</span>
+      {% else %}
+        <span style="font-size:15px;" class="negrito"> Noite: {{dia|reserva_dia:espaco}}</span>
+      {% endif %}
+      </div>
+
+  </div>
+</div>
+
+{% endfor %}
+
+</div>
+
+
+
+<script>
+$.datepicker.setDefaults( $.datepicker.regional[ "pt-br" ] );
+$( ".calendario" ).datepicker({
+  dateFormat: "dd/mm/yy",
+  changeMonth: true,
+  changeYear: true,
+  altField: "#actualDate",
+  dayNamesMin: [ "Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab" ],
+  monthNamesShort: [ "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro" ],
+  language: 'pt',
+});
+
+</script>
+{% endblock %}

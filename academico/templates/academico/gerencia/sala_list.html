@@ -1,0 +1,181 @@
+{% extends "base/base.html" %}
+
+{% block title %}
+  Lista salas | {{ block.super }}
+{% endblock %}
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'atividade:gerencia' %}">Gerenciar</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Listar Salas</li>
+{% endblock %}
+
+{% block conteudo %}
+
+{% include 'uteis/mensagens.html' %}
+
+<div class="row">
+    <div class="col-12 col-md-10">
+        <h3>
+            <a href="{% url 'atividade:gerencia' %}" class="btn btn-outline-primary btn-sm">
+                <i class="material-icons">reply</i>
+            </a>
+          &nbsp;
+          Lista de Salas
+        </h3>
+      </div>
+      <div class="col-12 col-md-2">
+          <a href="{% url 'academico:novo_sala'%}" class="btn btn-success">Novo</a>
+      </div>
+</div>
+
+
+
+<table class="table table-hover table-sm table-responsive w-100 d-block d-md-table">
+  <thead>
+    <tr>
+      <th scope="col">Identificador</th>
+      <th scope="col">Prédio</th>
+      <th scope="col">Status</th>
+      <th scope="col">Editar</th>
+      <th scope="col">Excluir</th>
+    </tr>
+  </thead>
+  <tbody>
+
+{% for sala in object_list %}
+	<tr>
+    <td>{{sala.identificador}}</td>
+    <td>{{sala.predio}}</td>
+    
+    {% if sala.ativo %}
+    <td><span class="badge badge-success">Ativo</span></td>
+      <td>
+      	<a class="btn btn-outline-primary btn-sm" href="{% url 'academico:editar_sala' sala.id %}">
+          <i class="material-icons icone_pequeno">
+            edit
+          </i>
+        </a>
+      </td>
+      <td>
+        <a class="btn btn-outline-danger btn-sm" onClick="limpar('{{sala.id}}')" data-toggle="modal" data-target="#modal-{{sala.id}}">
+          <i class="material-icons icone_pequeno">
+            close
+          </i>
+        </a>
+
+        <!-- ########################## modal ######################-->
+        <div class="modal fade" id="modal-{{sala.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Desativar sala <span class="negrito">{{sala.identificador}}</span></h5>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form class="form">
+                <h5>Tem certeza que deseja Desativar a Sala?</h5>
+                
+                <h6>Copie e cole o valor abaixo para confirmar</h6>
+                <h5>{{sala.id}}</h5>
+                <input id="input-{{sala.id}}" class="form-control input-entrada" type="text" name="id-sala"/>
+                </form>
+                <p>
+                <div class="div-saida">
+
+                </div>
+                </p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button id="btn-confirme" onClick="desativar_sala_js('{{sala.id}}')" type="button" class="btn btn-danger">Desativar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- ################ fim modal ##################-->
+
+      </td>
+    {% else %}
+        <td><span class="badge badge-dark">Inativo</span></td>
+        <td>
+        <button disabled class="btn btn-outline-primary btn-sm">
+          <i class="material-icons icone_pequeno">
+            edit
+          </i>
+          </button>
+        </td>
+        <td>
+        <button disabled class="btn btn-outline-danger btn-sm">
+          <i class="material-icons icone_pequeno">
+            close
+          </i>
+          </button>
+        </td>
+   {% endif %}
+
+    </tr>
+{% endfor %}
+
+  </tbody>
+</table>
+
+<script type="text/javascript">
+
+function limpar(id){
+   $('.div-saida').html('');
+   $('#input-'+id).val('');
+}
+
+
+function desativar_sala_js(id){
+      var input_entrada = $('#input-'+id).val();
+      //VERIFICA SE O ID DIGITADO NO INPUT ESTA CERTO
+      if (input_entrada != id ){
+        var html = '<div class="alert alert-danger" role="alert">';
+        html += 'Valor digitado incorreto!';
+        html += '</div>';
+        $('.div-saida').html(html);
+        return;
+      }
+      
+      //TRES LINHAS PARA REMOVER O ID TEMPORARIO E COLOCAR O CERTO
+      valor = id;         
+      request_url = "{% url 'academico:desativar_sala_ajax' user.id %}"
+      request_url = request_url.replace('{{user.id}}',valor);
+    
+      $.ajax({
+        url: request_url,
+        type: 'get',
+        dataType: 'json',
+        beforeSend: function () {
+      },
+        //OCORREU TUDO CERTO NA REQUISIÇÃO
+        success: function (data) {
+          var html;
+          //FOI DESATIVADO
+          if (data.dependencia_espaco){
+            html = '<h5 class="alert alert-danger" role="alert">Não foi possivel desativar a Sala!</h5>'
+            html += '<h6>Existem as sequintes Dependencias.</h6>'
+            $.each(data.espaco_list , function(key, value){
+              req_url = "{% url 'academico:listar_espaco' %}"
+              //req_url = req_url.replace('{{user.id}}',value.id);
+              html += '<p>Espaço: <a class="negrito" href='+req_url+'>'+value.espaco+'</a><p>'
+              });
+
+          }else{
+            html = '<h5 class="alert alert-success" role="alert">Desativado com sucesso!</h5>';
+            location.reload();
+          }
+         //SETA A MENSAGEM DE SAIDA NA DIV
+          $('.div-saida').html(html);
+          
+      }
+    });
+}
+</script>
+	
+{% endblock %}

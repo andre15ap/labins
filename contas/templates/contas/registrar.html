@@ -1,0 +1,42 @@
+
+
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  Cadastrar | {{ block.super }}
+{% endblock %}
+
+{% block entrar %} {% endblock %}
+
+{% block conteudo %}
+
+  <h1 class="font-grande negrito">Cadastro</h1>
+
+  <form class="form-horizontal" enctype="multipart/form-data" method="post">
+    {% csrf_token %}
+
+    {% for error in form.non_field_errors %}
+      <div class="alert alert-danger">
+        {{error}}
+      </div>
+    {% endfor %}
+
+    <fieldset>
+          {% for field in form %}
+            <p>
+              {{ field.label_tag }}<br>
+              {{ field }}
+              {% if field.help_text %}
+                <small style="color: grey">{{ field.help_text }}</small>
+              {% endif %}
+              {% for error in field.errors %}
+                <p style="color: red">{{ error }}</p>
+              {% endfor %}
+            </p>
+          {% endfor %}
+          <button class="btn btn-success" type="submit">Salvar</button>
+  </form>
+
+
+{% endblock %}

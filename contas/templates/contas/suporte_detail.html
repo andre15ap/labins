@@ -1,0 +1,121 @@
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  Index | {{ block.super }}
+{% endblock %}
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{suporte}}</li>
+{% endblock %}
+
+{% block conteudo %}
+
+{% include 'uteis/mensagens.html'%}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+  <div class="card-header">
+   <h3> 
+    {% include 'uteis/botao_voltar.html' %}
+    </a>
+   &nbsp; {{suporte}}
+  </h3>
+  </div>
+
+  <div class="card-body">
+    <div class="row">
+      <div class="col-12 col-md-6 margin_inferior">
+        <h5 class="card-title"><span class="negrito ">CPF:</span> {{suporte.username}}</h5>
+        <p class="card-text"> <span class="negrito ">Telefone:</span>  {{suporte.telefone}}</p>
+        <p class="card-text"> <span class="negrito ">Email:</span>    {{suporte.email}}</p>
+             
+        <p class="card-text"> <span class=negrito ">Situação:</span> 
+        {% if suporte.is_active %}
+          <span id="mgs-situacao" class="badge badge-success"> Ativo</span>
+        {% else %}
+          <span id="mgs-situacao" class="badge badge-dark">Inativo</span>
+        {% endif %}
+        </p>
+
+        {% if user.id == suporte.id %}
+            <a href="{% url 'contas:suporte_update' suporte.id %}" class="btn btn-info">Alterar dados Pessoais</a>     
+            <a href="{% url 'contas:usuario_alterar_senha' %}" class="btn btn-info">Alterar Senha</a>
+        {% endif %}
+
+      </div>
+
+      <div class="col-12 col-md-6">
+        {% if suporte.foto %}
+        <img class="img-thumbnail img_media" src="{{suporte.foto.url}}">
+        {% else %}
+        <h4>Sem Foto</h4>
+        {% endif%}
+      </div>
+    </div>
+
+  </div>
+</div>
+  </div>
+</div>
+
+    <div style="margin-top:10px;" class="alert alert-success" role="alert">
+		<span class="negrito">Turmas sob responsabilidade de {{suporte}}</span>
+  	</div>
+
+	<div class="row">
+		<div class="col-12">
+		<!-- <div class="responsive-table"> -->
+		 <table class="table table-hover table-bordered table-sm table-responsive w-100 d-block d-md-table">
+				<thead class="tabela-cor-padrao">
+				{% comment %} <thead class="thead-dark"> {% endcomment %}
+					<tr>
+						<th scope="col">Nome</th>
+						<th scope="col">atividade</th>
+						<th scope="col">Tipo</th>
+						<th scope="col">Solicitante</th>
+						<th scope="col">Status</th>
+						<th scope="col">Ações</th>
+					</tr>
+				</thead>
+				<tbody>
+				{% for turma in turma_list %}
+		
+				<tr>
+					<th cope="row">{{turma.nome}}</th>
+					<td>
+						<a href="{% url 'atividade:atividade_detail' turma.atividade.id %}">
+							{{turma.atividade.nome}}
+						</a>
+					</td>
+					<td>{{turma.atividade.tipo_atividade}}</td>
+					<td>
+					{% if turma.atividade %}
+						<a href="{% url 'contas:solicitante_detail' turma.atividade.solicitante.id %}" class="btn">
+							{{turma.atividade.solicitante}}
+						</a>
+					{% endif %}
+					</td>
+					<td>{{turma.status}}</td>
+					<td>
+						<a href="{% url 'atividade:detalhar_turma' turma.id %}" class="btn btn-primary">
+							<i class="material-icons icone_pequeno">playlist_add</i>
+						</a>
+						{% comment %} <a href="{% url 'atividade:atividade_detail' atividade.id %}" class="btn btn-outline-primary btn-sm">
+							<i class="material-icons icone_pequeno">playlist_add</i> 
+						</a> {% endcomment %}
+					</td>
+				</tr>
+			
+				{% endfor %}      
+				</tbody>
+			</table>
+			<!-- </div> -->
+		 </div>
+		</div>
+
+
+
+
+{% endblock %}

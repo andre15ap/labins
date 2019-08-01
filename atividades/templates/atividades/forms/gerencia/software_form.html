@@ -1,0 +1,37 @@
+
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  Novo Software | {{ block.super }}
+{% endblock %}
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'atividade:gerencia' %}">Gerenciar</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'atividade:listar_software' %}">Listar Softwares</a></li>
+    {% if object %}
+    <li class="breadcrumb-item active" aria-current="page">Editar Softwares</li>
+    {% else %}
+    <li class="breadcrumb-item active" aria-current="page">Novo Softwares</li>
+    {% endif %}
+{% endblock %}
+
+{% block conteudo %}
+
+{% if user.permissao_suporte %}
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6">
+            <h3>
+                {% include 'uteis/botao_voltar.html' %}
+                &nbsp;
+                formulário Software
+            </h3>
+        </div>
+    </div>
+    {% include 'uteis/form_padrao.html' %}
+{% else %}
+    <h3>Sem Permissao para a Ação</h3>
+{% endif %}
+
+{% endblock %}

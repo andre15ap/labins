@@ -1,0 +1,137 @@
+{% extends "base/base.html" %}
+
+{% load atividades_tags %}
+
+{% block title %}
+  formulário reserva | {{ block.super }}
+{% endblock %}
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Turmas</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Reservas</li>
+{% endblock %}
+
+{% block conteudo %}
+
+	<h2>
+    <a href="{% url 'atividade:listar_turma' turma.atividade.id %}" class="btn btn-outline-primary btn-sm">
+      <i class="material-icons">reply</i>
+    </a> 
+    Reservas para {{turma}}</h2>
+	<hr \>
+  
+{% include 'uteis/mensagens.html'%}
+
+<div class="row">
+  <div class="col-md-6">
+    <h6> Maximo de reservas = {{max_reservas}}</h6>
+  </div>
+  <div class="col-md-6">
+    <h6> Reservas Restantes = {{reservas_restantes}}</h6>
+  </div>
+</div>
+
+<div class=" row">
+
+  {% for espaco in espaco_list.all %}
+    
+    <div class="col-2">
+      <div class="form-check">
+          <input class="form-check-input espaco" type="radio" name="espaco" id="{{espaco.id}}" value="{{espaco.id}}" {% if espaco == espaco_atual %} checked {% endif %}>
+          <label class="form-check-label negrito" for="{{espaco.id}}"> {{espaco}} </label>
+      </div>
+    </div>
+  {% endfor %}
+
+</div>
+
+<div class=" row">
+
+  {% for dia in dias %}
+
+  <div class="card card_reserva" style="width: 10rem;">
+  
+  <div class="card-body">
+    <h5 class="card-title">{{dia.dia.day}}/{{dia.dia.month}}/{{dia.dia.year}}</h5>
+    <h6 class="card-subtitle mb-2 text-muted">{{dia.dia|dia_semana}}</h6>
+
+      <div class="custom-control custom-checkbox my-1 mr-sm-2">
+      <input  
+       {% if not dia.Manha %} disabled {% endif %}
+            type="checkbox" class="custom-control-input dia " value="{{dia.dia.day}}/{{dia.dia.month}}/{{dia.dia.year}}-Manha" id="{{dia.dia.day}}/{{dia.dia.month}}/{{dia.dia.year}}-Manha">
+    
+        <label class="custom-control-label verde negrito" for="{{dia.dia.day}}/{{dia.dia.month}}/{{dia.dia.year}}-Manha">Manhã</label>
+      </div>
+      <div class="custom-control custom-checkbox my-1 mr-sm-2">
+        <input 
+        {% if not dia.Tarde %} disabled {% endif %}
+          type="checkbox" class="custom-control-input dia" value="{{dia.dia.day}}/{{dia.dia.month}}/{{dia.dia.year}}-Tarde" id="{{dia.dia.day}}/{{dia.dia.month}}/{{dia.dia.year}}-Tarde">
+        <label class="custom-control-label verde negrito" for="{{dia.dia.day}}/{{dia.dia.month}}/{{dia.dia.year}}-Tarde">Tarde</label>
+      </div>
+      <div class="custom-control custom-checkbox my-1 mr-sm-2">
+        <input 
+        {% if not dia.Noite %} disabled {% endif %}
+          type="checkbox" class="custom-control-input dia" value="{{dia.dia.day}}/{{dia.dia.month}}/{{dia.dia.year}}-Noite" id="{{dia.dia.day}}/{{dia.dia.month}}/{{dia.dia.year}}-Noite">
+        <label class="custom-control-label verde negrito" for="{{dia.dia.day}}/{{dia.dia.month}}/{{dia.dia.year}}-Noite">Noite</label>
+      </div>
+  </div>
+</div>
+
+  {% endfor %}
+
+</div>
+
+<div>
+<button class="btn btn-success reservar">Reservar</button>
+</div>
+
+
+<!--##################### Scrips ################ -->
+<script type="text/javascript">
+
+$(".espaco").click(function(){
+   id_espaco = $(this).val();
+   request_url = "{% url 'atividade:nova_reserva' pk=turma.id id_esp=user.id %}";
+   request_url = request_url.replace("{{user.id}}", id_espaco)
+   $(location).attr('href', request_url);
+})
+
+$(".reservar").click(function(){
+    var espaco;
+    espaco_list =  $(".espaco");
+    $.each(espaco_list, function(key, value){
+      if (value.checked){
+          espaco = value.value;
+        }
+    });
+    //console.log(espaco);
+    var inputs = $(".dia");
+    var lista = [];
+    var i = 0;
+    $.each(inputs, function(key, value){   
+        if (value.checked){
+          lista[i] = value.value;
+          i ++;
+        }
+      });
+    //request_url = "{% url 'atividade:reserva_remover_ajax' pk=turma.id %}";
+    //request_url = request_url.replace("{{turma.id}}", valor);   
+    
+
+    $.ajax({
+      url: "{% url 'atividade:nova_reserva' %}",
+      method: 'POST',
+      data: { dias: lista, turma_id:'{{turma.id}}', espaco_id: espaco, csrfmiddlewaretoken: '{{ csrf_token }}'},
+        success: function(data){  
+        request_url = "{% url 'atividade:index_reservas' pk=turma.id %}";
+        $(location).attr('href', request_url);
+       }
+    })
+
+});
+
+  
+</script>
+
+{% endblock %}

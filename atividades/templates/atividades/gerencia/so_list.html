@@ -1,0 +1,183 @@
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  Lista Sistemas | {{ block.super }}
+{% endblock %}
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'atividade:gerencia' %}">Gerenciar</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Listar Sistemas Operacionais</li>
+{% endblock %}
+
+{% block conteudo %}
+
+{% include 'uteis/mensagens.html'%}
+
+<div class="row">
+    <div class="col-12 col-md-10">
+        <h3>
+            <a href="{% url 'atividade:gerencia' %}" class="btn btn-outline-primary btn-sm">
+                  <i class="material-icons">reply</i>
+            </a>
+          &nbsp;
+          Lista de Sistemas Operacionais
+        </h3>
+    </div>
+    <div class="col-12 col-md-2">
+      <a href="{% url 'atividade:novo_sistema' %}" class="btn btn-success">Novo</a>
+    </div>
+</div>
+
+
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Nome</th>
+      <th scope="col">Versão</th>
+      <th scope="col">status</th>
+      <th scope="col">Editar</th>
+      <th scope="col">Excluir</th>
+    </tr>
+  </thead>
+  <tbody>
+
+{% for sistema in object_list %}
+	<tr>
+      <td>{{sistema.nome}}</td>
+      <td>{{sistema.versao}}</td>
+
+      {% if sistema.ativo %}
+      <td><span class="badge badge-success">Ativo</span></td>
+
+      <td>
+         <a class="btn btn-outline-primary btn-sm" href="{% url 'atividade:editar_sistema' sistema.id %}">
+            <i class="material-icons icone_pequeno">
+              edit
+            </i>
+          </a>
+      </td>
+      <td>
+       <a class="btn btn-outline-danger btn-sm" onClick="limpar('{{sistema.id}}')" data-toggle="modal" data-target="#modal-{{sistema.id}}">
+          <i class="material-icons icone_pequeno">
+            close
+          </i>
+        </a>
+
+        <!-- ########################## modal ######################-->
+        <div class="modal fade" id="modal-{{sistema.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Desativar Sistema Operacional <span class="negrito">{{sistema.nome}}</span></h5>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form class="form">
+                <h5>Tem certeza que deseja Desativar o Sistema Operacional?</h5>
+                
+                <h6>Copie e cole o valor abaixo para confirmar</h6>
+                <h5>{{sistema.id}}</h5>
+                <input id="input-{{sistema.id}}" class="form-control input-entrada" type="text" name="id-sistema"/>
+                </form>
+                <p>
+                <div class="div-saida">
+
+                </div>
+                </p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button id="btn-confirme" onClick="desativar_sistema_js('{{sistema.id}}')" type="button" class="btn btn-danger">Desativar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- ################ fim modal ##################-->
+      </td>
+
+      {% else %}
+        <td><span class="badge badge-dark">Inativo</span></td>
+        <td>
+        <button disabled class="btn btn-outline-primary btn-sm">
+          <i class="material-icons icone_pequeno">
+            edit
+          </i>
+          </button>
+        </td>
+        <td>
+        <button disabled class="btn btn-outline-danger btn-sm">
+          <i class="material-icons icone_pequeno">
+            close
+          </i>
+          </button>
+        </td>
+      {% endif %}
+
+    </tr>
+{% endfor %}
+
+  </tbody>
+</table>
+
+<script type="text/javascript">
+
+function limpar(id){
+   $('.div-saida').html('');
+   $('#input-'+id).val('');
+}
+
+
+function desativar_sistema_js(id){
+      var input_entrada = $('#input-'+id).val();
+      //VERIFICA SE O ID DIGITADO NO INPUT ESTA CERTO
+      if (input_entrada != id ){
+        var html = '<div class="alert alert-danger" role="alert">';
+        html += 'Valor digitado incorreto!';
+        html += '</div>';
+        $('.div-saida').html(html);
+        return;
+      }
+      
+      //TRES LINHAS PARA REMOVER O ID TEMPORARIO E COLOCAR O CERTO
+      valor = id;         
+      request_url = "{% url 'atividade:desativar_sistema_ajax' user.id %}"
+      request_url = request_url.replace('{{user.id}}',valor);
+    
+      $.ajax({
+        url: request_url,
+        type: 'get',
+        dataType: 'json',
+        beforeSend: function () {
+      },
+        //OCORREU TUDO CERTO NA REQUISIÇÃO
+        success: function (data) {
+          var html;
+          //FOI DESATIVADO
+          if (data.dependencia_software){
+            html = '<h5 class="alert alert-danger" role="alert">Não foi possivel desativar o Sistema Operacional!</h5>'
+            html += '<h6>Existem as sequintes Dependências.</h6>'
+            $.each(data.software_list , function(key, value){
+              req_url = "{% url 'atividade:listar_software' %}"
+              //req_url = req_url.replace('{{user.id}}',value.id);
+              html += '<p>Software: <a class="negrito" href='+req_url+'>'+value.software+'</a><p>'
+              });
+
+          }else{
+            html = '<h5 class="alert alert-success" role="alert">Desativado com sucesso!</h5>';
+            location.reload();
+          }
+         //SETA A MENSAGEM DE SAIDA NA DIV
+          $('.div-saida').html(html);
+          
+      }
+    });
+}
+</script>
+
+{% endblock %}

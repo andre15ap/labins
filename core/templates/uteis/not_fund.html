@@ -1,0 +1,33 @@
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  Index | {{ block.super }}
+{% endblock %}
+
+{% block conteudo %}
+
+{% if messages %}
+   {% for msg in messages %}
+   <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{msg}}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+   {% endfor %}
+{% endif %}
+
+<div class="card-header">
+    <h3> 
+ 
+     <a href="{% url 'contas:index' %}" class="btn btn-outline-primary btn-sm">
+       <i class="material-icons">
+         reply
+       </i>
+     </a>
+   </h3>
+
+<h2>Acesso Negado, Procure a equipe de suporte.</h2>
+</div>
+{% endblock %}

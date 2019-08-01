@@ -1,0 +1,22 @@
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  Deletar Atividade | {{ block.super }}
+{% endblock %}
+
+{% block conteudo %}
+
+	<form method="post">
+	{% csrf_token %}
+	
+		<h3>Deseja Realmente Excluir a Atividade?</h3>
+		<h2>{{object.nome}} </h2>
+
+		<button class="btn btn-danger" type="submit"><i class="material-icons icone_pequeno">delete_forever</i> Excluir</button>
+		<a class="btn btn-light" href="{% url 'contas:index' %}"><i class="material-icons icone_pequeno">cancel_presentation</i>Cancelar</a>
+
+	</form>
+
+
+{% endblock%}

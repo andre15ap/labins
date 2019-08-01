@@ -1,0 +1,181 @@
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  Lista Sistemas | {{ block.super }}
+{% endblock %}
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'atividade:gerencia' %}">Gerenciar</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Listar Tipos de Solicitantes</li>
+{% endblock %}
+
+{% block conteudo %}
+
+{% include 'uteis/mensagens.html' %}
+
+  <div class="row">
+    <div class="col-12 col-md-10">
+      <h3>
+          {% include 'uteis/botao_voltar.html'%}
+          &nbsp;
+          Lista de Tipos de Solicitante
+        </h3>
+    </div>
+    <div class="col-12 col-md-2">
+      <a href="{% url 'contas:novo_tipo_solicitante' %}" class="btn btn-success">Novo</a>
+    </div>
+  </div>
+
+
+
+<table class="table table-hover table-sm table-responsive w-100 d-block d-md-table">
+  <thead>
+    <tr>
+      <th scope="col">Tipo</th>
+      <th scope="col">Descrição</th>
+      <th scope="col">Status</th>
+      <th scope="col">Editar</th>
+      <th scope="col">Excluir</th>
+    </tr>
+  </thead>
+  <tbody>
+
+{% for tipo in object_list %}
+	<tr>
+      <td>{{tipo.tipo}}</td>
+      <td>{{tipo.descricao}}</td>
+
+      {% if tipo.ativo %}
+      <td><span class="badge badge-success">Ativo</span></td>
+
+      <td>
+      	<a class="btn btn-outline-primary btn-sm" href="{% url 'contas:editar_tipo_solicitante' tipo.id %}">
+          <i class="material-icons icone_pequeno">
+            edit
+          </i>
+        </a>
+      </td>
+      <td>
+       <a class="btn btn-outline-danger btn-sm" onClick="limpar('{{tipo.id}}')" data-toggle="modal" data-target="#modal-{{tipo.id}}">
+          <i class="material-icons icone_pequeno">
+            close
+          </i>
+        </a>
+
+        <!-- ########################## modal ######################-->
+        <div class="modal fade" id="modal-{{tipo.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Desativar Tipo de Solicitate <span class="negrito">{{tipo.nome}}</span></h5>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form class="form">
+                <h5>Tem certeza que deseja Desativar o Tipo de Solicitate?</h5>
+                
+                <h6>Copie e cole o valor abaixo para confirmar</h6>
+                <h5>{{tipo.id}}</h5>
+                <input id="input-{{tipo.id}}" class="form-control input-entrada" type="text" name="id-tipo"/>
+                </form>
+                <p>
+                <div class="div-saida">
+
+                </div>
+                </p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button id="btn-confirme" onClick="desativar_tipo_js('{{tipo.id}}')" type="button" class="btn btn-danger">Desativar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- ################ fim modal ##################-->
+      </td>
+
+      {% else %}
+        <td><span class="badge badge-dark">Inativo</span></td>
+        <td>
+        <button disabled class="btn btn-outline-primary btn-sm">
+          <i class="material-icons icone_pequeno">
+            edit
+          </i>
+          </button>
+        </td>
+        <td>
+        <button disabled class="btn btn-outline-danger btn-sm">
+          <i class="material-icons icone_pequeno">
+            close
+          </i>
+          </button>
+        </td>
+      {% endif %}
+
+    </tr>
+{% endfor %}
+
+  </tbody>
+</table>
+
+<script type="text/javascript">
+
+function limpar(id){
+   $('.div-saida').html('');
+   $('#input-'+id).val('');
+}
+
+
+function desativar_tipo_js(id){
+      var input_entrada = $('#input-'+id).val();
+      //VERIFICA SE O ID DIGITADO NO INPUT ESTA CERTO
+      if (input_entrada != id ){
+        var html = '<div class="alert alert-danger" role="alert">';
+        html += 'Valor digitado incorreto!';
+        html += '</div>';
+        $('.div-saida').html(html);
+        return;
+      }
+      
+      //TRES LINHAS PARA REMOVER O ID TEMPORARIO E COLOCAR O CERTO
+      valor = id;         
+      request_url = "{% url 'contas:desativar_tipo_solicitante_ajax' user.id %}"
+      request_url = request_url.replace('{{user.id}}',valor);
+    
+      $.ajax({
+        url: request_url,
+        type: 'get',
+        dataType: 'json',
+        beforeSend: function () {
+      },
+        //OCORREU TUDO CERTO NA REQUISIÇÃO
+        success: function (data) {
+          var html;
+          //FOI DESATIVADO
+          if (data.dependencia_solicitante){
+            html = '<h5 class="alert alert-danger" role="alert">Não foi possivel desativar o Tipo de Solicitate!</h5>'
+            html += '<h6>Existem as sequintes Dependências.</h6>'
+            $.each(data.solicitante_list , function(key, value){
+              req_url = "{% url 'contas:solicitante_detail' user.id %}"
+              req_url = req_url.replace('{{user.id}}',value.id);
+              html += '<p>Solicitante: <a class="negrito" href='+req_url+'>'+value.solicitante+'</a><p>'
+              });
+
+          }else{
+            html = '<h5 class="alert alert-success" role="alert">Desativado com sucesso!</h5>';
+            location.reload();
+          }
+         //SETA A MENSAGEM DE SAIDA NA DIV
+          $('.div-saida').html(html);
+          
+      }
+    });
+}
+</script>
+	
+{% endblock %}

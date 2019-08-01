@@ -1,0 +1,77 @@
+{% extends "base/base.html" %}
+
+{% block title %}
+  Index | {{ block.super }}
+{% endblock %}
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{usuario}}</li>
+{% endblock %}
+
+{% block conteudo %}
+
+{% include 'uteis/mensagens.html'%}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+  <div class="card-header">
+   <h3> 
+    {% include 'uteis/botao_voltar.html' %}
+    </a>
+   &nbsp; {{usuario}}
+  </h3>
+  </div>
+
+
+  <div class="card-body">
+    <div class="row">
+      <div class="col-12 col-md-6 margin_inferior">
+        <h5 class="card-title"><span class=negrito ">CPF:</span> {{usuario.username}}</h5>
+        <p class="card-text"> <span class=negrito ">Telefone:</span>  {{usuario.telefone}}</p>
+        <p class="card-text"> <span class=negrito ">Email:</span>    {{usuario.email}}</p>
+        
+        {% if usuario.curso_setor %}
+        <p class="card-text"> <span class=negrito ">Curso ou Setor:</span> {{usuario.curso_setor}}</p>
+        {% endif %}
+        {% if usuario.tipo_solicitante %}
+        <p class="card-text"> <span class=negrito ">Tipo:</span> {{usuario.tipo_solicitante}}</p>
+        {% endif %}
+        
+        <p class="card-text"> <span class=negrito ">Situação:</span> 
+        {% if usuario.is_active %}
+          <span id="mgs-situacao" class="badge badge-success"> Ativo</span>
+        {% else %}
+          <span id="mgs-situacao" class="badge badge-dark">Inativo</span>
+        {% endif %}
+        </p>
+
+        {% if user.permissao_suporte %}
+        <a href="{% url 'contas:suporte_update' usuario.id %}" class="btn btn-info">Alterar dados Pessoais</a>
+        {% else %}
+        <a href="{% url 'contas:solicitante_update' usuario.id %}" class="btn btn-info">Alterar dados Pessoais</a>
+        {% endif %}
+        <a href="{% url 'contas:usuario_alterar_senha' %}" class="btn btn-info">Alterar Senha</a>
+
+      </div>
+
+      <div class="col-12 col-md-6">
+        {% if usuario.foto %}
+        <img class="img-thumbnail img_media" src="{{usuario.foto.url}}">
+        {% else %}
+        <h4>Sem Foto</h4>
+        {% endif%}
+      </div>
+    </div>
+
+  </div>
+</div>
+  </div>
+</div>
+
+	
+
+
+
+
+{% endblock %}

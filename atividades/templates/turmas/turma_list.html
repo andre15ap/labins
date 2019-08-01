@@ -1,0 +1,93 @@
+{% extends "base/base.html" %}
+
+{% load atividades_tags %}
+
+{% block title %}
+  Listar Turmas | {{ block.super }}
+{% endblock %}
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Turmas</li>
+{% endblock %}
+
+{% block conteudo %}
+
+{% include 'uteis/mensagens.html' %}
+
+
+<div class="row">
+    <div class="col-12 col-md-10">
+        <h3>
+            <a href="{% url 'contas:index' %}" class="btn btn-outline-primary btn-sm">
+                  <i class="material-icons">reply</i>
+            </a>
+          &nbsp;
+          Lista de Turmas de {{atividade}}
+        </h3>
+    </div>
+    <div class="col-12 col-md-2">
+        <a class="btn btn-success" href="{% url 'atividade:nova_turma' pk %}"> Nova Turma</a>
+    </div>
+</div>
+
+
+
+<table class="table table-hover table-sm table-responsive w-100 d-block d-md-table">
+  <thead>
+    <tr>
+      <th scope="col">Turma</th>
+      {% comment %} <th scope="col">Atividade</th> {% endcomment %}
+      <th scope="col">Softwares</th>
+      <th scope="col">Status</th>
+      <th scope="col">Ação</th>
+      <th scope="col">Reservas</th>
+     
+    </tr>
+  </thead>
+  <tbody>
+
+{% for turma in object_list %}
+	<tr>
+      <td>{{turma.nome}}</td>
+      {% comment %} <td>{{turma.atividade}}</td> {% endcomment %}
+      <td>
+      {% for software in turma.softwares.all %}
+        <span class="badge badge-info">{{software}}</span>
+      {% endfor %}
+      </td>
+      <td>{{turma.status}}</td>
+
+      <td>
+      	<a class="btn btn-outline-info btn-sm" href="{% url 'atividade:detalhar_turma' turma.id %}">
+          <i class="material-icons icone_pequeno">
+            assignment
+          </i>
+        </a>
+
+      	<a class="btn btn-outline-primary btn-sm" href="{% url 'atividade:editar_turma' turma.id %}">
+          <i class="material-icons icone_pequeno">
+            edit
+          </i>
+        </a>
+      
+        {% comment %} <a class="btn btn-outline-danger btn-sm" href="{% url 'atividade:deletar_turma' turma.id %}">
+          <i class="material-icons icone_pequeno">
+            delete
+          </i>
+        </a> {% endcomment %}
+      </td>
+
+      <td>
+        <a class="btn btn-outline-success {% if not turma|turma_ativa %} disabled {% endif %}" href="{% url 'atividade:nova_reserva' turma.id %}">Criar</a>
+        <a class="btn btn-outline-secondary {% if not turma|turma_ativa %} disabled {% endif %}" href="{% url 'atividade:index_reservas' turma.id %}">Cancelar</a>
+      </td>
+    </tr>
+{% endfor %}
+
+  </tbody>
+</table>
+
+
+
+{% endblock %}

@@ -1,0 +1,241 @@
+{% extends "base/base.html" %}
+
+{% load atividades_tags %}
+
+{% block title %}
+  Detalhar Turma | {{ block.super }}
+{% endblock %}
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{object}}</li>
+{% endblock %}
+
+{% block conteudo %}
+
+{% if user.permissao_suporte %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+  <div class="card-header">
+   
+    <h3> 
+      {% include 'uteis/botao_voltar.html'%}
+      &nbsp; {{object}}
+    </h3>
+  </div>
+  <div class="card-body">
+    <p>   
+      <h4 class="card-title"><span class=negrito ">Momento:</span>
+      {% if object.momento %}{{object.momento}}{% else %} - {% endif %}
+      </h4>
+    </p>
+    <p>   
+      <h4 class="card-title"><span class=negrito ">Atividade:</span> {{object.atividade}}</h4>
+    </p>
+    <p>
+      <h5 class="card-title"><span class=negrito ">Descrição Atividade:</span> {{object.atividade.descricao}}</h5>
+    </p>
+    <p>
+      <h5 class="card-text"> <span class=negrito ">Solicitante:</span>  {{object.atividade.solicitante}}</h5>
+    </p>
+    <p>
+      <h5 class="card-text"> <span class=negrito ">Tipo de Atividade:</span> {{object.atividade.tipo_atividade}}</h5>
+    </p>
+    <p>
+      <h5 class="card-text"> <span class=negrito ">Curso ou Setor:</span> {{object.atividade.curso_setor}}</h5>
+    </p>
+    <p>
+      <h5 class="card-text"> <span class=negrito ">Quantidade de Computadores:</span> {{object.qtd_computadores}}</h5>
+    </p>
+    <p>
+      <h5 class="card-text"> <span class=negrito ">Quantidade de Bancadas:</span> {{object.qtd_bancadas}}</h5>
+    </p>
+    <p>
+      <h5 class="card-text"> <span class=negrito ">Quantidade de Encontros:</span> {{object.qtd_encontro}}</h5>
+    </p>
+    <p>
+      <h5 class="card-text"> <span class=negrito ">Softwares:</span> 
+        {% for software in object.softwares.all %}
+        <a class="btn btn-info btn-sm" href="{% url 'atividade:listar_software' %}">{{software}}</a>
+        {% endfor %}
+      </h5>
+    </p>
+    
+    <p>
+      {% if object.responsavel %}
+        <h5 class="card-text" class="responsavel"> <span class=negrito ">Responsavel:</span><span class="responsavel"> {{object.responsavel}}</span></h5>
+      {% else %}
+        <h5 class="card-text" class="responsavel"> <span class=negrito ">Responsavel:</span><span class="responsavel">Sem Responsável</span></h5>
+      {% endif %}
+    </p>
+    
+    <p>
+      <h5 class="card-text" id="id-status"> <span class=negrito ">Status:</span> {{object.status}}</h5>
+    </p>
+   
+   {% if not object.status == object.ENCERRADA %}
+    <div class="row">
+      <div class="col-12 col-md-12">
+    
+        {% if not object|turma_ativa and not object.status == object.AGUARDANDO and not object.status == object.BLOQUEADA %}
+        <a href="{% url 'atividade:liberar_turma' object.id %}" class="btn btn-success desable"  > Liberar e Tornar-se Responsável </a>
+        {% elif not object.status == object.AGUARDANDO and object.responsavel.id == user.id %}
+        <a href="{% url 'atividade:liberar_turma' object.id %}" class="btn btn-success" > 
+            {% if object.status == object.BLOQUEADA %}
+            Liberar Turma
+            {% else %}
+            Editar Momento e Espaços 
+            {% endif %}
+        </a>
+        {% endif %}
+        {% if object.responsavel and object.responsavel.id == user.id %}
+        
+        <button id="trocar-id" class="btn btn-primary" data-toggle="modal" data-target="#modal-confirme">Deixar de ser Responsável</button>
+        <a class="btn btn-danger" onClick="limpar('{{sistema.id}}')" data-toggle="modal" data-target="#modal-turma">Encerrar Turma</a>
+        {% elif not object.responsavel and object.status == object.AGUARDANDO %}
+        <button id="trocar-id" class="btn btn-primary" data-toggle="modal" data-target="#modal-confirme">Tornar-se Responsavel</button>
+        {% endif %}
+    </div>
+  </div>
+  {% endif %}
+  </div>
+</div>
+  </div>
+</div>
+
+        <!-- ########################## modal encerrar turma ######################-->
+        <div class="modal fade" id="modal-turma" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Encerrar Turma <span class="negrito">{{sistema.nome}}</span></h5>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form class="form">
+                <h5>Tem certeza que deseja Encerrar Definitivamente a Turma?</h5>
+                
+                <h6>Copie e cole o valor abaixo para confirmar</h6>
+                <h5>{{object.id}}</h5> 
+                <input id="input-turma" class="form-control input-entrada" type="text" name="input-turma"/>
+                </form>
+                <p>
+                <div class="div-saida">
+
+                </div>
+                </p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button id="btn-confirme" onClick="desativar_turma_js('{{object.id}}')" type="button" class="btn btn-danger">Desativar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- ################ fim modal ##################-->
+
+<!-- ########################## modal responsavel ######################-->
+<div class="modal fade" id="modal-confirme" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Deixar de ser responsavel</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h6>Tem certeza que deseja deixar de ser o responsavel da atividade <span class="negrito">{{object.nome}}</span></h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary js-mudar">Confirmar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ################ fim modal ##################-->
+
+
+<!--##################### Scrips ################ -->
+<script type="text/javascript">
+
+function limpar(id){
+   $('.div-saida').html('');
+   $('#input-'+id).val('');
+}
+
+
+function desativar_turma_js(id){
+      var input_entrada = $('#input-turma').val();
+      //VERIFICA SE O ID DIGITADO NO INPUT ESTA CERTO
+      if (input_entrada != id ){
+        var html = '<div class="alert alert-danger" role="alert">';
+        html += 'Valor digitado incorreto!';
+        html += '</div>';
+        $('.div-saida').html(html);
+        return;
+      }
+      
+      //TRES LINHAS PARA REMOVER O ID TEMPORARIO E COLOCAR O CERTO
+      valor = id;         
+      request_url = "{% url 'atividade:desativar_turma_ajax' user.id %}"
+      request_url = request_url.replace('{{user.id}}',valor);
+    
+      $.ajax({
+        url: request_url,
+        type: 'get',
+        dataType: 'json',
+        beforeSend: function () {
+      },
+        //OCORREU TUDO CERTO NA REQUISIÇÃO
+        success: function (data) {
+          var html;
+          //FOI DESATIVADO
+          if (data.dependencia_reserva){
+            html = '<h5 class="alert alert-danger" role="alert">Não foi possivel encerrar a Turma!</h5>'
+            html += '<h6>Existem reservas ativas como Dependências.</h6>'
+
+          }else{
+            html = '<h5 class="alert alert-success" role="alert">Encerrada com sucesso!</h5>';
+            location.reload();
+          }
+         //SETA A MENSAGEM DE SAIDA NA DIV
+          $('.div-saida').html(html);
+          
+      }
+    });
+}
+
+  $(".js-mudar").click(function () {
+      $.ajax({
+        url: "{% url 'atividade:mudar_responsavel_ajax' object.id %}",
+        // url: '/conta/mudar',
+        type: 'get',
+        dataType: 'json',
+        beforeSend: function () {
+        // alert('deu certo ');
+        // $("#modal-book").modal("show");
+      },
+      success: function (data) {
+        // $("#teste").html(data.html);
+        $('#modal-confirme').modal('hide');
+        if (data.permitido_atualizar){
+           
+           location.reload();
+    
+        }else{
+          alert('Sem permissção para a ação!!');
+        }
+      }
+    });
+  });
+
+</script>
+
+{% endif %}
+{% endblock %}

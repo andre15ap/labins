@@ -1,0 +1,64 @@
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  Index | {{ block.super }}
+{% endblock %}
+
+{% block conteudo %}
+
+{% include 'uteis/mensagens.html' %}
+
+<div class="row">
+	<div class="col-12 col-md-6"><h2>Minhas Atividades/Disciplinas</h2></div>
+	<div style="text-align: right;" class="col-12 col-md-6 margin_inferior">
+		<a href="{% url 'atividade:nova_atividade' %}" class="btn btn-success">Nova Atividade</a>
+	</div>
+</div>
+
+
+<div class="row">
+{% for atividade in object_list %}
+<div class="col-12 col-md-4 margin_inferior">
+	<div class="card">
+	  <div class="card-body">
+	    <h4 class="card-title">{{atividade.nome}}</h4>
+		<h5 class="card-subtitle mb-2 text-muted">Tipo: {{atividade.tipo_atividade}}</h5>
+	    <h6 class="card-text"><span class=negrito ">Descrição:</span> {{atividade.descricao}}</h6>
+		<h6 class="card-text">
+		{% if atividade.ativo %}
+			Status: <span id="mgs-situacao" class="badge badge-success"> Ativa </span>
+		{% else %}
+			Status: <span id="mgs-situacao" class="badge badge-dark">Inativa </span>
+		{% endif %}
+		-
+		{% if atividade.liberada %}
+			Liberada?: <span id="mgs-situacao" class="badge badge-success"> Liberada </span>
+		{% else %}
+			Liberada?: <span id="mgs-situacao" class="badge badge-dark"> Não Liberada </span>
+		{% endif %}
+		</h6>
+
+
+	    <a href="{% url 'atividade:atividade_detail' atividade.id %}" class="card-link btn btn-primary">
+			<span>
+				<i class="material-icons icone_pequeno">playlist_add</i>
+				Detalhar
+			</span>
+		</a>
+
+	    <a href="{% url 'atividade:listar_turma' atividade.id %}" class="card-link btn btn-success {% if not atividade.liberada %}disabled{% endif %}"role="button">
+	    	<i class="material-icons icone_pequeno">assignment</i>
+	    	Turmas
+		</a>
+
+	  </div>
+	</div>
+</div>
+
+
+	{% endfor %}
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,39 @@
+
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  Novo sistema operacional | {{ block.super }}
+{% endblock %}
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'atividade:gerencia' %}">Gerenciar</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'atividade:listar_sistema' %}">Listar Tipos de Atividades</a></li>
+    {% if object %}
+    <li class="breadcrumb-item active" aria-current="page">Editar Sistema Operacional</li>
+    {% else %}
+    <li class="breadcrumb-item active" aria-current="page">Novo Sistema Operacional</li>
+    {% endif %}
+{% endblock %}
+
+{% block conteudo %}
+
+{% if user.permissao_suporte %}
+<div class="row justify-content-center">
+      <div class="col-12 col-md-6">
+        <h3>
+          {% include 'uteis/botao_voltar.html' %}
+          &nbsp;
+          formulário Sistema Operacional
+        </h3>
+      </div>
+    </div>
+
+    {% include 'uteis/form_padrao.html' %}
+
+{% else %}
+<h3>Sem Permissao para a Ação</h3>
+{% endif %}
+
+{% endblock %}

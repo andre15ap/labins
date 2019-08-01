@@ -1,0 +1,101 @@
+{% extends "base/base.html" %}
+
+{% block title %}
+  Lista Fotos | {{ block.super }}
+{% endblock %}
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'atividade:gerencia' %}">Gerenciar</a></li>
+    {% if object.sala %}
+    <li class="breadcrumb-item"><a href="{% url 'academico:listar_espaco' %}">Listar Espaços</a></li>
+    {% else %}
+    <li class="breadcrumb-item"><a href="{% url 'academico:listar_predio' %}">Listar Prédios</a></li>
+    {% endif %}
+    <li class="breadcrumb-item active" aria-current="page">Fotos: {{object.identificador}}</li>
+{% endblock %}
+
+{% block conteudo %}
+
+{% include 'uteis/mensagens.html' %}
+
+<div class="row">
+    <div class="col-12">
+        <h3>
+            {% include 'uteis/botao_voltar.html' %}
+          &nbsp;
+          Detalhes - {{object.identificador}}
+        </h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 col-md-6">
+       {% if object.sala %}
+       <h4>Sala: {{object.sala}}</h4>
+       <h4>Computadores: {{object.qtd_computadores}}</h4>
+       <h4>Bancadas: {{object.qtd_bancadas}}</h4>
+       {% else %}
+        <h4>Campus:{{object.predio.campus}}</h4>
+       {% endif %}
+        <h5>Descrição: {{object.descricao}}</h5>
+    </div>
+    <div class="col-12 col-md-6">
+        <form class="form-inline" enctype="multipart/form-data" method="POST">
+                {% csrf_token %}
+				<div class="form-group mx-sm-2 mb-2">
+				{{form.foto}}
+				</div>
+                <div class="form-group mx-sm-2 mb-1">
+				<button class="btn btn-success btn-sm" type="submit">  
+                    <i class="material-icons">
+                    add_photo_alternate
+                    </i>
+                </button>
+			</div>
+        </form>    
+        
+    </div>
+</div>
+    
+<div class="row">
+    {% for foto in fotos %}
+    <div class="col-12 col-md-4 margin_inferior">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-title">{{foto.data}}</h6>
+            <!-- <h5 class="card-subtitle mb-2 text-muted">Solicitante: {{atividade.solicitante}}</h5> -->
+            
+            {% comment %} <img class="card-subtitle mb-2 text-muted">Responsável: {{foto.foto}}</h5> {% endcomment %}
+            <div class="row justify-content-center margin_inferior">
+                <div class="col-12">
+                    <img class="img-fluid img-thumbnail" src="{{ foto.foto.url }}" width="300" height="250" class="d-inline-block align-top" alt=""/>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    {% if object.sala %}
+                    <a href="{% url 'academico:deletar_foto_espaco' foto.id %}" class="btn btn-outline-danger">
+                        <i class="material-icons icone_medio">delete_forever</i> 
+                        <span class="icone_medio">Deletar</span>
+                    </a>
+                    {% else %}
+                    <a href="{% url 'academico:deletar_foto_predio' foto.id %}" class="btn btn-outline-danger">
+                        <i class="material-icons icone_medio">delete_forever</i> 
+                        <span class="icone_medio">Deletar</span>
+                    </a>
+                    {% endif %}
+                    
+                </div>
+            </div>
+            
+          </div>
+        </div>
+    </div>
+    
+    
+    {% endfor %} 
+    </div>
+
+
+{% endblock %}

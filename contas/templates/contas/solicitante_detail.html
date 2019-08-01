@@ -1,0 +1,327 @@
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  Index | {{ block.super }}
+{% endblock %}
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'contas:solicitantes_list' %}">Usuários</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{object}}</li>
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+  <div class="card-header">
+   <h3>
+   <a href="{% url 'contas:solicitantes_list' %}" class="btn btn-outline-primary btn-sm">
+    <i class="material-icons">
+      reply
+    </i>
+  </a>
+    {% comment %} {% include 'uteis/botao_voltar.html' %} {% endcomment %}
+   &nbsp; {{object}}
+  </h3>
+  </div>
+
+
+  <div class="card-body">
+    <div class="row">
+      <div class="col-12 col-md-6 margin_inferior">
+        <h5 class="card-title"><span class=negrito ">CPF:</span> {{object.username}}</h5>
+        <p class="card-text"> <span class=negrito ">Telefone:</span>  {{object.telefone}}</p>
+        <p class="card-text"> <span class=negrito ">Email:</span>    {{object.email}}</p>
+        <p class="card-text"> <span class=negrito ">Curso ou Setor:</span> {{object.curso_setor}}</p>
+        <p class="card-text"> <span class=negrito ">Tipo:</span> {{object.tipo_solicitante}}</p>
+
+
+        <p class="card-text"> <span class=negrito ">Status:</span>
+        {% if object.ativo %}
+          <span id="mgs-situacao" class="badge badge-success"> Ativo</span>
+        {% else %}
+          <span id="mgs-situacao" class="badge badge-dark">Inativo</span>
+        {% endif %}
+        </p>
+
+        <p class="card-text"> <span class=negrito ">Situação:</span>
+        {% if object.is_active %}
+          <span id="mgs-situacao" class="badge badge-success"> Liberado</span>
+        {% else %}
+          <span id="mgs-situacao" class="badge badge-dark"> Não Liberado</span>
+        {% endif %}
+        </p>
+
+        {% if not object.is_active %}
+          <button id="btn-situacao" class="btn btn-primary" data-toggle="modal" data-target="#modal-confirme">Liberar Usuário</button>
+        {% endif %}
+
+        {% if object.ativo %}
+          <button id="btn-situacao" class="btn btn-primary" data-toggle="modal" data-target="#modal-solicitante">Desativar Usuário do Sistema</button>
+        {% endif %}
+
+      </div>
+
+      <div class="col-12 col-md-6">
+        {% if object.foto %}
+        <img class="img-thumbnail img_media" src="{{object.foto.url}}">
+        {% else %}
+        <h4>Sem Foto</h4>
+        {% endif%}
+      </div>
+    </div>
+
+  </div>
+</div>
+  </div>
+</div>
+
+  <div style="margin-top:10px;" class="row alert alert-success" role="alert">
+    <div class="col-6 col-md-6">
+      <span class="negrito">Atividade/Disciplina</span>
+    </div>
+    <div class="col-6 col-md-6">
+      <span class="negrito">Turmas</span>
+    </div>
+		{% comment %} <span class="negrito">Ativiades/Disciplinas de {{object}}</span> {% endcomment %}
+  </div>
+
+<hr \>
+
+  {% for atividade in atividade_list %}
+    <div class="row ">
+      <div class="col-6 col-md-6">
+        <a class="negrito" data-toggle="collapse" href="#collapse-{{atividade.id}}" role="button" aria-expanded="false" aria-controls="collapseExample">{{atividade}}</a>
+      </div>
+      <div class="col-6 col-md-6">
+        <button id="btn-{{atividade.id}}" onClick="turmas_js('{{atividade.id}}')" class="btn btn-outline-primary btn-sm " data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+          Turmas
+          <i class="material-icons icone_pequeno">playlist_add</i>
+        </button>
+      </div>
+  </div>
+
+<div class="collapse" id="collapse-{{atividade.id}}">
+  <div class="card card-body">
+    <p class="card-title"><span class=negrito ">Descrição da Atividade:</span> {{atividade.descricao}}</p>
+    <p class="card-text"> <span class=negrito ">Tipo de Atividade:</span>    {{atividade.tipo_atividade}}</p>
+    <p class="card-text"> <span class=negrito ">Curso ou Setor:</span> {{atividade.curso_setor}}</p>
+
+    <h6 class="card-text">
+    {% if atividade.ativa %}
+        Atividade - <span id="mgs-situacao" class="badge badge-success"> Ativa </span>
+    {% else %}
+        Atividade - <span id="mgs-situacao" class="badge badge-dark">Inativa </span>
+    {% endif %}
+    </h6>
+  </div>
+</div>
+
+  <div id="{{atividade.id}}"></div>
+  <hr \>
+  {% endfor %}
+
+
+
+
+<!-- ########################## modal ######################-->
+<div class="modal fade" id="modal-confirme" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Liberar Usuário</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h6>Tem certeza que Liberar  o usuário <span class="negrito">{{object.first_name}}</span></h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary js-liberar">Liberar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ################ fim modal ##################-->
+
+
+        <!-- ########################## modal Desativar solicitante ######################-->
+        <div class="modal fade" id="modal-solicitante" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Desativar Solicitante <span class="negrito">{{object}}</span></h5>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form class="form">
+                <h5>Tem certeza que deseja Desativar o solicitante pemanentemente?</h5>
+
+                <h6>Copie e cole o valor abaixo para confirmar</h6>
+                <h5>{{object.id}}</h5>
+                <input id="input-solicitante" class="form-control input-entrada" type="text" name="id-solicitante"/>
+                </form>
+                <p>
+                <div class="div-saida">
+
+                </div>
+                </p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button id="btn-confirme" onClick="desativar_solicitante_js('{{object.id}}')" type="button" class="btn btn-danger">Desativar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- ################ fim modal ##################-->
+
+<!--##################### Scrips ################ -->
+<script type="text/javascript">
+  $(function () {
+
+  $(".js-liberar").click(function () {
+      $.ajax({
+        url: "{% url 'contas:solicitante_liberar_ajax' object.id %}",
+        // url: '/conta/mudar',
+        type: 'get',
+        dataType: 'json',
+        beforeSend: function () {
+        // alert('deu certo ');
+        // $("#modal-book").modal("show");
+      },
+      success: function (data) {
+        // $("#teste").html(data.html);
+        $('#modal-confirme').modal('hide');
+        if (data.liberou){
+            $('#mgs-situacao').addClass('badge-success');
+            $('#mgs-situacao').text('Ativo');
+            location.reload();
+        }else{
+          alert('Não trocou')
+        }
+      }
+    });
+  });
+
+});
+
+
+
+function turmas_js(id){
+    if ($('#'+id).attr('value') == 'conteudo'){
+        $('#'+id).html('');
+        $('#'+id).attr('value', 'limpo');
+        var mostrar;
+        mostrar = 'Turmas'
+        mostrar += '<i class="material-icons icone_pequeno">playlist_add</i>'
+        $('#btn-'+id).html(mostrar);
+    }else{
+      valor = id;
+      request_url = "{% url 'contas:listar_turmas_ajax' object.id %}"
+      request_url = request_url.replace('{{object.id}}',valor)
+
+      $.ajax({
+        url: request_url,
+        // url: '/conta/mudar',
+        type: 'get',
+        dataType: 'json',
+        beforeSend: function () {
+      },
+        success: function (data) {
+          var html;
+          html = '<table class="table table-hover table-bordered table-sm table-responsive w-100 d-block d-md-table">';
+          html+= '<thead class="tabela-cor-padrao">';
+          html+= '<tr>';
+          html+= '<th scope="col">Turma</th>';
+          html+= '<th scope="col">Responsável</th>';
+          html+= '<th scope="col">Momento</th>';
+          html+= '<th scope="col">Status</th>';
+          html+= '</tr>';
+          html+= '</thead>';
+          html+= '<tbody>';
+          $.each(data, function(key, value){
+              //$('#troca').click(false);
+              html+= '<tr value='+value.id+'>';
+              html += '<td>'+value.nome+ '</td> <td> '+value.responsavel+ '</td> <td>' +value.momento+'</td> <td> Turma - '+value.status+'</td>';
+              html += '</tr>';
+            });
+          html += '</tbody>';
+          html += '</table>';
+
+          $('#'+id).html(html);
+          $('#'+id).attr('value', 'conteudo');
+          var ocultar;
+          ocultar = 'Ocultar'
+          ocultar += '<i class="material-icons icone_pequeno">minimize</i>'
+          $('#btn-'+id).html(ocultar);
+      }
+    });
+  }
+}
+
+function limpar(id){
+   $('.div-saida').html('');
+   $('#input-'+id).val('');
+}
+
+
+function desativar_solicitante_js(id){
+      var input_entrada = $('#input-solicitante').val();
+      //VERIFICA SE O ID DIGITADO NO INPUT ESTA CERTO
+      if (input_entrada != id ){
+        var html = '<div class="alert alert-danger" role="alert">';
+        html += 'Valor digitado incorreto!';
+        html += '</div>';
+        $('.div-saida').html(html);
+        return;
+      }
+
+      //TRES LINHAS PARA REMOVER O ID TEMPORARIO E COLOCAR O CERTO
+      valor = id;
+      request_url = "{% url 'contas:desativar_solicitante_ajax' user.id %}"
+      request_url = request_url.replace('{{user.id}}',valor);
+
+      $.ajax({
+        url: request_url,
+        type: 'get',
+        dataType: 'json',
+        beforeSend: function () {
+      },
+        //OCORREU TUDO CERTO NA REQUISIÇÃO
+        success: function (data) {
+          var html;
+          //FOI DESATIVADO
+          if (data.dependencia_atividade){
+            html = '<h5 class="alert alert-danger" role="alert">Não foi possivel desativar o Solicitante!</h5>'
+            html += '<h6>Existem as sequintes Dependências.</h6>'
+            $.each(data.atividade_list , function(key, value){
+              req_url = "{% url 'atividade:atividade_detail' user.id %}"
+              req_url = req_url.replace('{{user.id}}',value.id);
+              html += '<p>Atividade: <a class="negrito" href='+req_url+'>'+value.atividade+'</a><p>'
+              });
+
+          }else{
+            html = '<h5 class="alert alert-success" role="alert">Desativado com sucesso!</h5>';
+            location.reload();
+          }
+         //SETA A MENSAGEM DE SAIDA NA DIV
+          $('.div-saida').html(html);
+
+      }
+    });
+}
+
+</script>
+
+
+
+{% endblock %}

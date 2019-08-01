@@ -1,0 +1,77 @@
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  Lista Sistemas | {{ block.super }}
+{% endblock %}
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Listar Atividades</li>
+{% endblock %}
+
+{% block conteudo %}
+
+{% include 'uteis/mensagens.html'%}
+
+<div class="row">
+    <div class="col-12">
+        <h3>
+            <a href="{% url 'atividade:gerencia' %}" class="btn btn-outline-primary btn-sm">
+                <i class="material-icons">reply</i>
+            </a>
+          &nbsp;
+          Lista de Atividades
+        </h3>
+    </div>
+ 
+</div>
+
+<table class="table table-hover table-sm table-responsive w-100 d-block d-md-table">
+  <thead>
+    <tr>
+      <th scope="col">Nome</th>
+      <th scope="col">Tipo</th>
+      <th scope="col">Solicitante</th>
+      <th scope="col">Curso/Setor</th>
+      <th scope="col">Status</th>
+      <th scope="col">Situação</th>
+    </tr>
+  </thead>
+  <tbody>
+
+{% for atividade in object_list %}
+	<tr>
+        <td>
+            <a href="{% url 'atividade:atividade_detail' atividade.id %}">
+                {{atividade.nome}}
+            </a>
+        </td>
+        <td>{{atividade.tipo_atividade}}</td>
+        <td>
+            <a href="{% url 'contas:solicitante_detail' atividade.solicitante.id %}">
+                {{atividade.solicitante}}
+            </a>
+        </td>
+      <td>{{atividade.curso_setor}}</td>
+      
+      {% if atividade.ativo %}
+      <td><span class="badge badge-success">Ativa</span></td>
+      {% else %}
+      <td><span class="badge badge-dark">Inativa</span></td>
+      {% endif %}
+
+      {% if atividade.liberada %}
+      <td><span class="badge badge-success">Liberada</span></td>
+      {% else %}
+      <td><span class="badge badge-dark">Não Liberada</span></td>
+      {% endif %}
+    </tr>
+{% endfor %}
+
+  </tbody>
+</table>
+
+
+	
+{% endblock %}

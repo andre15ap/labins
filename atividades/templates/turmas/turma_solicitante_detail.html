@@ -1,0 +1,73 @@
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  Detalhar Turma | {{ block.super }}
+{% endblock %}
+
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Turmas</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Detalhar</li>
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+  <div class="card-header">
+   <h3> 
+    {% include 'uteis/botao_voltar.html' %}
+    &nbsp; {{object}}
+  </h3>
+
+  </div>
+  <div class="card-body">
+    <h5 class="card-title"><span class=negrito ">Descrição:</span> {{object.atividade.descricao}}</h5>
+    <p class="card-text"> <span class=negrito ">Solicitante:</span>  {{object.atividade.solicitante}}</p>
+    <p class="card-text"> <span class=negrito ">Tipo de Atividade:</span>    {{object.atividade.tipo_atividade}}</p>
+    <p class="card-text"> <span class=negrito ">Curso ou Setor:</span> {{object.atividade.curso_setor}}</p>
+    <p class="card-text"> <span class=negrito ">Qtd Computadores:</span> {{object.qtd_computadores}}</p>
+    <p class="card-text"> <span class=negrito ">Qtd Bancadas:</span> {{object.qtd_bancadas}}</p>
+    <p class="card-text"> <span class=negrito ">Softwares:</span> 
+      {% for software in object.softwares.all %}
+        <span class="badge badge-info">{{software}}</span>
+      {% endfor %}
+      </p>
+  
+    
+    {% if object.responsavel %}
+      <p class="card-text"> <span class=negrito ">Responsavel:</span> {{object.responsavel}}</p>
+    {% endif %}
+
+    {% if object.momento %}
+      <p class="card-text"> <span class=negrito ">momento:</span> {{object.momento}}</p>
+    {% endif %}
+
+    {% if object.espacos_liberados %}
+      <p class="card-text"> <span class=negrito ">Espaços Liberados:</span> 
+        {% for espaco in object.espacos_liberados.all %}
+        <span class="badge badge-success">{{espaco}}</span>
+      {% endfor %}
+      </p>
+    {% endif %}
+
+    
+    <p class="card-text"> <span class=negrito ">Status:</span> {{object.status}}</p>
+    
+  
+    
+    {% if object.atividade.solicitante.id == user.id %}
+     <a href="{% url 'atividade:editar_turma' object.id %}" class="btn btn-primary">Editar</a>
+      {% comment %} <a href="{% url 'atividade:deletar_turma' object.id %}" class="btn btn-danger">Excluir</a> {% endcomment %}
+    {% endif %}
+
+  </div>
+</div>
+  </div>
+</div>
+
+	
+{% endblock %}

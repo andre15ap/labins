@@ -1,0 +1,169 @@
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  Detalhar Atividade | {{ block.super }}
+{% endblock %}
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'atividade:listar_atividade' %}">Listar Atividades</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{object}}</li>
+{% endblock %}
+
+{% block conteudo %}
+
+{% if user.permissao_suporte %}
+<div class="row">
+    <div class="col-12">
+      <div class="card">
+    <div class="card-header">
+    <h3> 
+        <a href="{% url 'atividade:listar_atividade' %}" class="btn btn-outline-primary btn-sm">
+          <i class="material-icons">
+            reply
+          </i>
+        </a>
+        &nbsp; {{object}}
+    </h3>
+  </div>
+  <div class="card-body">
+    <h5 class="card-title"><span class=negrito ">Descrição:</span> {{object.descricao}}</h5>
+    <p class="card-text"> <span class=negrito ">Solicitante:</span>  {{object.solicitante}}</p>
+    <p class="card-text"> <span class=negrito ">Tipo de Atividade:</span>    {{object.tipo_atividade}}</p>
+    <p class="card-text"> <span class=negrito ">Curso ou Setor:</span> {{object.curso_setor}}</p>
+    
+    {% if object.responsavel and object.responsavel.id != user.id %}
+    <p class="card-text"> <span class=negrito ">Responsavel:</span> {{object.responsavel}}</p>
+    {% endif %}
+    
+    <p class="card-text">
+    {% if object.ativo %}
+			<p class="card-text"> <span class=negrito ">Status: </span><span id="mgs-situacao" class="badge badge-success"> Ativa </span></p>
+		{% else %}
+			<p class="card-text"> <span class=negrito ">Status: </span> <span id="mgs-situacao" class="badge badge-dark"> Inativa </span> </p>
+		{% endif %}
+    </p>
+
+    <p class="card-text">
+    {% if object.liberada %}
+			<span id="mgs-situacao" class="badge badge-success"> Liberada </span>
+		{% else %}
+			<span id="mgs-situacao" class="badge badge-dark"> Não Liberada </span>
+		{% endif %}
+    </p>
+   
+
+    {% if not object.liberada %}
+      <button id="ativar" class="btn btn-primary" data-toggle="modal" data-target="#modal-confirme">Liberar</button>
+    {% endif %}
+    
+
+    </div>
+  </div>
+  </div>
+</div>
+
+<br>
+
+<div class="row">
+	<div class="col-12">
+		<table class="table table-hover table-bordered table-sm table-responsive w-100 d-block d-md-table">
+			<thead class="tabela-cor-padrao">
+				<tr>
+					<th scope="col">Turmas</th>
+					<th scope="col">Tipo</th>
+					<th scope="col">Solicitante</th>
+					<th scope="col">Suporte</th>
+					<th scope="col">Status</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for turma in turma_list %}
+				<tr>
+					<th cope="row">
+						<a href="{% url 'atividade:detalhar_turma' turma.id %}" title="Detalhar Turma">
+							{{turma.nome}}		
+						</a>
+					</th>
+					<td>{{turma.atividade.tipo_atividade}}</td>
+					<td>
+					{% if turma.atividade %}
+						<a href="{% url 'contas:solicitante_detail' turma.atividade.solicitante.id %}" class="btn">
+							{{turma.atividade.solicitante}}
+						</a>
+					{% endif %}
+					</td>
+					<td>
+            {% if turma.responsavel %}
+						<a href="{% url 'contas:suporte_detail' turma.responsavel.id %}" title="Detalhar Atividade/Disciplina">
+							{{turma.responsavel}}
+						</a>
+            {% else %}
+            Sem Suporte
+            {% endif %}
+					</td>
+					<td>Turma - {{turma.status}}</td>
+					
+				</tr>
+			
+			{% endfor %}      
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<!-- ########################## modal ######################-->
+<div class="modal fade" id="modal-confirme" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Liberar Atividade</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h6>Tem certeza que deseja Liberar a Atividade <span class="negrito">{{object.nome}}</span></h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary js-mudar">Liberar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ################ fim modal ##################-->
+
+
+<!--##################### Scrips ################ -->
+<script type="text/javascript">
+  $(function () {
+
+  $(".js-mudar").click(function () {
+      $.ajax({
+        url: "{% url 'atividade:atividade_liberar_ajax' object.id %}",
+        // url: '/conta/mudar',
+        type: 'get',
+        dataType: 'json',
+        beforeSend: function () {
+        // alert('deu certo ');
+        // $("#modal-book").modal("show");
+      },
+      success: function (data) {
+        // $("#teste").html(data.html);
+        $('#modal-confirme').modal('hide');
+        if (data.liberou){         
+          location.reload();
+        }else{
+          alert('Não trocou')
+        }
+      }
+    });
+  });
+
+});
+</script>
+
+{% endif %}
+{% endblock %}

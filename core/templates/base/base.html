@@ -1,0 +1,99 @@
+
+{% load static %}
+{% load geral_tags %}
+
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> -->
+	<title>{% block title %}Labins{% endblock %}</title>
+
+	<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/config.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/estilo.css' %}">
+
+	<script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/jquery-ui.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/my_scripty.js' %}"></script>
+</head>
+<body>
+
+
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+  <a class="navbar-brand" href="{% url 'contas:index' %}">
+  	{% if user.foto %}
+  	<img class="imgcircle" src="{{ user.foto.url }}" width="30" height="30" class="d-inline-block align-top" alt=""/>
+  	{% endif %}
+  	Labins
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+    <div class="navbar-nav ml-auto">
+		<a class="nav-item nav-link" href="{% url 'publico' %}">Painel-Público</a>
+		{% if user.is_authenticated %}
+
+			{% if user|permissao_suporte %}
+				<a class="nav-item nav-link" href="{% url 'contas:index' %}">Inicio <span class="sr-only">(current)</span></a>
+				<a class="nav-item nav-link" href="{% url 'atividade:listar_atividade' %}">Atividades/Disciplinas</a>
+				<a class="nav-item nav-link" href="{% url 'contas:solicitantes_list' %}">Usuários</a>
+				<a class="nav-item nav-link" href="{% url 'atividade:gerencia' %}">Gerenciar</a>
+			{% elif user|tipo_usuario:'solicitante'  %}
+				<!-- <a class="nav-item nav-link" href="#">Atividades</a> -->
+				<a class="nav-item nav-link" href="{% url 'contas:index' %}">Atividades/Disciplinas <span class="sr-only">(current)</span></a>
+				<a class="nav-item nav-link" href="{% url 'atividade:escolher_turma' %}">Reservas</a>
+			{% endif %}
+				<a href="{% url 'contas:usuario_detail' %}" class="nav-item nav-link negrito"> {{user.first_name}}  </a>
+				<a class="nav-item nav-link" href="{% url 'logout' %}">Sair</a>
+				<!-- <a class="nav-item nav-link disabled" href="#">Disabled</a> -->
+		{% else %}
+				{% block entrar %}
+					<form class="form-inline" action="" method="POST">{% csrf_token %}
+							<div class="form-group mx-sm-2 mb-1">
+							<input class="form-control form-control-sm" id="username-field" name="username" type="text" placeholder="CPF" />
+							</div>
+							<div class="form-group mx-sm-2 mb-1">
+							<input class="form-control form-control-sm" id="password-field" name="password" type="password" placeholder="senha"/>
+							</div>
+							<div class="form-group mx-sm-2 mb-1">
+							<button class="btn btn-success btn-sm negrito" type="submit">Entrar</button>
+						</div>
+					</form>
+				{% endblock %}
+				<!-- <a class="nav-item nav-link" href="{% url 'contas:recuperar_senha' %}">Recuparar Senha</a> -->
+				<a class="nav-item nav-link" href="{% url 'contas:registrar' %}">Registrar-se</a>
+		{% endif %}
+
+
+    </div>
+</div>
+</div>
+</nav>
+
+
+<div class="container margin-sup">
+{% if user.is_authenticated %}
+<nav aria-label="breadcrumb">
+	<ol class="breadcrumb">
+	{% block navegar %}
+    	<li class="breadcrumb-item active" aria-current="page">Inicio</li>
+	{% endblock %}
+  	</ol>
+</nav>
+{% endif %}
+	{% block conteudo %} {% endblock %}
+</div>
+
+</body>
+
+<footer class="footer">
+</footer>
+
+</html>

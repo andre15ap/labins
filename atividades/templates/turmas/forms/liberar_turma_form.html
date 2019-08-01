@@ -1,0 +1,17 @@
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  formulário Liberar Turma | {{ block.super }}
+{% endblock %}
+
+{% block conteudo %}
+
+	<h2>{% include 'uteis/botao_voltar.html' %}  Liberar Turma {{turma.atividade}}</h2>
+	<hr \>
+  
+{% include 'uteis/mensagens.html'%}
+
+{% include 'uteis/form_padrao.html'%}
+	
+{% endblock %}

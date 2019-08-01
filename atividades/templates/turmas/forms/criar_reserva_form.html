@@ -1,0 +1,116 @@
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  formulário reserva | {{ block.super }}
+{% endblock %}
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Turmas</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Reservas</li>
+{% endblock %}
+
+{% block conteudo %}
+
+	<h2>
+    <a href="{% url 'atividade:listar_turma' turma.atividade.id %}" class="btn btn-outline-primary btn-sm">
+      <i class="material-icons">reply</i>
+    </a> 
+    Nova Reserva {{turma}}</h2>
+	<hr \>
+  
+{% include 'uteis/mensagens.html'%}
+
+{% include 'uteis/form_padrao.html'%}
+    
+<br>
+
+<div class="row justify-content-center">
+  <div class="col-12 col-md-6">
+  <table class="table table-hover table-sm table-responsive w-100 d-block d-md-table">
+    <thead>
+      <tr>
+        <th scope="col">Dia</th>
+        <th scope="col">Turno</th>
+        <th scope="col">Espaço</th>
+        <th scope="col">Remover</th>
+      </tr>
+    </thead>
+  
+
+    <tbody class="">
+
+{% for reserva in  reservas_list %}
+	<tr class="linha{{reserva.id}}">
+      <td>{{reserva.dia}}</td>
+      <td>{{reserva.turno}}</td>
+      <td>{{reserva.espaco}}</td>
+      <td><button onclick="apagar('{{reserva.id}}')" class="btn btn-danger">
+        <i class="material-icons icone_pequeno">delete_forever</i>
+      </button></td>
+    </tr>
+{% endfor %}
+
+  </tbody>
+</table>
+</div>
+</div>
+
+<!--##################### Scrips ################ -->
+<script type="text/javascript">
+function apagar(valor){
+  console.log('clicou '+valor)
+  id = '{{turma.id}}'
+  console.log(id)
+    request_url = "{% url 'atividade:reserva_remover_ajax' pk=turma.id %}";
+    request_url = request_url.replace("{{turma.id}}", valor);   
+      
+
+    $.ajax({
+        url: request_url,
+        success: function(data){  
+          if (data){
+            $('.linha'+valor).remove(); 
+          }   
+          //$.each(data, function(key, value){   
+              //var htmlButao = "<button class='btn btn-danger'>Apagar</button>";
+              //console.log(value)
+              //$('.listHistorico').append('<tr class="linhaHistorico"><td>'+value.dia+'</td><td>'+value.turno+'</td><td>'+value.espaco+'</td><td>'+htmlButao+'</td></tr>');
+          //});
+        }
+    })
+
+}
+
+  
+</script>
+
+<script>
+        $.datepicker.setDefaults( $.datepicker.regional[ "pt-br" ] );
+        var dia = "{{turma.momento.inicio.day}}"
+        var mes = "{{turma.momento.inicio.month}}"
+        var ano = "{{turma.momento.inicio.year}}"
+        var data_inicio = ""+dia+"/"+mes+"/"+ano+""
+        
+        var dia = "{{turma.momento.termino.day}}"
+        var mes = "{{turma.momento.termino.month}}"
+        var ano = "{{turma.momento.termino.year}}"
+        var data_fim = ""+dia+"/"+mes+"/"+ano+""
+        
+        
+        $( ".calendario" ).datepicker({
+          
+          dateFormat: "dd/mm/yy",
+          minDate: data_inicio,
+          maxDate: data_fim,
+          changeMonth: true,
+          changeYear: true,
+          altField: "#actualDate",
+          dayNamesMin: [ "Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab" ],
+          monthNamesShort: [ "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro" ],
+          language: 'pt',
+        });
+        
+        </script>
+{% endblock %}

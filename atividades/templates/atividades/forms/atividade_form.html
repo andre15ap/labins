@@ -1,0 +1,48 @@
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  nova atividade | {{ block.super }}
+{% endblock %}
+
+{% block conteudo %}
+	<h2>{% include 'uteis/botao_voltar.html' %}  Nova Atividades</h2>
+	<hr \>
+  
+  {% if messages %}
+   {% for msg in messages %}
+     <div class="alert alert-{{msg.level_tag}}" role="alert">
+            {{msg.message}}
+           </div>
+       {% endfor %}
+    {% endif %}
+
+<div class="row justify-content-center">
+  <div class="col-12 col-md-6">
+    <form method="post">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="form-group">
+              {{ field.label_tag }}<br>
+              {{ field }}
+              {% if field.help_text %}
+                <small style="color: grey">{{ field.help_text }}</small>
+              {% endif %}
+              {% for error in field.errors %}
+                <p style="color: red">{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endfor %}
+          <button type="submit" class="btn btn-success">
+            <i class="material-icons icone_medio">save</i> 
+            <span class="icone_medio">Salvar</span> 
+          </button>
+          <a href="{% url 'contas:index' %}" class="btn btn-secondary">
+            <i class="material-icons icone_medio">reply</i>
+            <span class="icone_medio">Cancelar</span>
+          </a>
+    </form>
+  </div>
+</div>
+	
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  Deletar Sala | {{ block.super }}
+{% endblock %}
+
+{% block conteudo %}
+
+	<form method="post">
+	{% csrf_token %}
+	
+		<h4>Deseja Realmente Excluir a Sala Abaixo ?</h4>
+		<h2>Sala Número -  {{object.numero}}  </h2>
+
+		<button class="btn btn-outline-danger" type="submit">
+            <i class="material-icons icone_medio">delete_forever</i> 
+            <span class="icone_medio">Deletar</span>
+        </button>
+        
+        <a class="btn btn-light" href="javascript:window.history.go(-1)">
+            <i class="material-icons">reply</i>
+            <span class="icone_medio">Cancelar</span>
+        </a>
+
+	</form>
+
+
+{% endblock%}

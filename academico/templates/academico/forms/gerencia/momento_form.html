@@ -1,0 +1,69 @@
+
+{% extends "base/base.html" %}
+
+
+{% block title %}
+  momento formulário | {{ block.super }}
+{% endblock %}
+
+{% block navegar %}
+    <li class="breadcrumb-item"><a href="{% url 'contas:index' %}">Inicio</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'atividade:gerencia' %}">Gerenciar</a></li>
+      {% if object %}    
+      <li class="breadcrumb-item active" aria-current="page">Editar Momento</li>
+      {% else %}
+      <li class="breadcrumb-item active" aria-current="page">Adicionar Momento</li>
+      {% endif %}
+{% endblock %}
+
+{% block conteudo %}
+
+{% if user.permissao_suporte %}
+
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-6">
+      <h3>
+        {% include 'uteis/botao_voltar.html' %} &nbsp; formulário Momento
+      </h3>
+    </div>
+  </div>
+
+  {% include 'uteis/form_padrao.html' %}
+
+
+  
+<script>
+$.datepicker.setDefaults( $.datepicker.regional[ "pt-br" ] );
+$( ".calendario" ).datepicker({
+  dateFormat: "dd/mm/yy",
+  changeMonth: true,
+  changeYear: true,
+  altField: "#actualDate",
+  dayNamesMin: [ "Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab" ],
+  monthNamesShort: [ "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro" ],
+  language: 'pt',
+});
+
+//$( ".selector" ).datepicker({
+//  dayNamesMin: [ "Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab" ]
+//});
+
+//$( ".selector" ).datepicker({
+//  dayNamesShort: [ "Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam" ]
+//});
+
+//$( ".selector" ).datepicker({
+//  monthNames: [ "Januar", "Februar", "Marts", "April", "Maj", "Juni", "Juli", "August", "September", "Oktober", "November", "December" ]
+//});
+
+//$( ".selector" ).datepicker({
+//  monthNamesShort: [ "Jan", "Feb", "Mar", "Apr", "Maj", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec" ]
+//});
+</script>
+
+{% else %}
+  <h3>Sem Permissao para a Ação</h3>
+{% endif %}
+
+
+{% endblock %}

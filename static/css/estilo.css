@@ -1,0 +1,102 @@
+.margin-sup{
+	margin-top: 70px;
+	margin-bottom: 30px;
+}
+
+.margin_inferior{
+  margin-bottom: 30px;
+}
+
+.sublinhado{
+  text-decoration: underline;
+
+}.negrito{
+  font-weight: bold;
+}
+
+.icone_pequeno{
+  font-size: 17px;
+  padding-bottom: 1px; 
+}
+
+.icone_medio{
+  font-size: 20px;
+}
+
+.alinhar {
+  padding-bottom: 5px;
+  font-size: 20px;  
+}
+
+.verde {
+  color: green;
+}
+
+.tabela-cor-padrao{
+  background-color: #00BFA5;
+}
+.tabela-cor-aviso{
+  background-color: #F44336;
+}
+.tabela-cor-alerta{
+  background-color: #FFEA00;
+}
+.tabela-cor-aviso th{
+  color: white;
+}
+.tabela-cor-padrao th{
+  color: white;
+}
+
+.img_media{
+  width: 230px;
+}
+
+.table-responsive {
+    display: table;
+}
+
+.circle {
+  /*background-color: #aaa;*/
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  overflow: hidden;
+  position: relative;
+}
+
+.imgcircle{
+  background-color: #ddd;
+  border-radius: 100%;
+  object-fit: cover;
+  height: 40px;
+  width: 40px;  
+}
+
+.list_titulo{
+  /* margin-top: 1px; */
+  padding-top: 5px;
+  padding-bottom: 1px;
+}
+
+.breadcrumb{
+  font-size: 15px;
+  margin-top: 0px;  
+}
+
+.list-group-item{
+  padding: 5px;
+}
+
+.card_reserva{
+  margin: 5px;  
+}
+
+.card-body{
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 2px;
+}
+
+

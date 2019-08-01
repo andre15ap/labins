@@ -1,0 +1,226 @@
+{% extends "base/base.html" %}
+
+{% load atividades_tags %}
+
+{% block title %}
+  Index | {{ block.super }}
+{% endblock %}
+
+{% block conteudo %}
+
+{% include 'uteis/mensagens.html' %}
+
+{% if solicitante_list %}
+	{% comment %} <div class="alert alert-warning" role="alert">
+		<span class="negrito">Solicitantes Inativos</span>
+	  </div> {% endcomment %}
+	{% comment %} <div class="">
+		<span class="negrito">Solicitantes Inativos</span>
+	</div> {% endcomment %}
+	<div class="row">
+		<div class="col-12">
+	 		<table class="table table-hover table-bordered table-sm table-responsive w-100 d-block d-md-table">
+				<thead class="tabela-cor-alerta">
+					<tr>
+						<th scope="col">Solicitantes Inativos</th>
+						<th scope="col">email</th>
+						<th scope="col">Telefone</th>
+						<th scope="col">Curso/Setor</th>
+						<th scope="col">Detalhar</th>
+					</tr>
+				</thead>
+				<tbody>
+				{% for solicitante in solicitante_list %}
+	
+				<tr>
+					<th cope="row">{{solicitante}}</th>
+					<td>{{solicitante.email}}</td>
+					<td>{{solicitante.telefone}}</td>
+					<td>{{solicitante.curso_setor}}</td>
+					<td>
+						<a href="{% url 'contas:solicitante_detail' solicitante.id %}" class="btn btn-outline-primary btn-sm">
+							<i class="material-icons icone_pequeno">playlist_add</i> 
+						</a>
+					</td>
+				</tr>
+		
+				{% endfor %}      
+				</tbody>
+			</table>
+	 	</div>
+	</div>
+
+{% endif %}
+
+
+{% if atividades_inativas_list %}
+	{% comment %} <div class="alert alert-warning" role="alert">
+		<span class="negrito">Atividades/Disciplinas Inativas</span>
+  	</div> {% endcomment %}
+	<div class="row">
+		<div class="col-12">
+	 		<table class="table table-hover table-bordered table-sm table-responsive w-100 d-block d-md-table">
+				<thead class="tabela-cor-alerta">
+					<tr>
+						<th scope="col">Atividades/Disciplinas Inativas</th>
+						<th scope="col">Tipo</th>
+						<th scope="col">Solicitante</th>
+						<th scope="col">curso/setor</th>
+						<th scope="col">Ações</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for atividade in atividades_inativas_list %}
+		
+					<tr>
+						<th cope="row">{{atividade.nome}}</th>
+						<td>{{atividade.tipo_atividade}}</td>
+						<td>
+							<a href="{% url 'contas:solicitante_detail' atividade.solicitante.id %}">
+								{{atividade.solicitante}}
+							</a>
+						</td>
+						<td>{{atividade.curso_setor}}</td>
+						<td>
+							<a href="{% url 'atividade:atividade_detail' atividade.id %}" class="btn btn-outline-primary btn-sm">
+								<i class="material-icons icone_pequeno">playlist_add</i> 
+							</a>
+						</td>
+					</tr>
+			
+					{% endfor %}      
+				</tbody>
+			</table>
+	 	</div>
+	</div>
+
+{% endif %}
+
+<div class="row">
+	<div class="col-12">
+	{% if turma_sem_responsavel_list %}
+
+		<table class="table table-hover table-bordered table-sm table-responsive w-100 d-block d-md-table">
+			<thead class="tabela-cor-aviso">
+				<tr>
+					<th scope="col">Turmas Sem Suporte</th>
+					<th scope="col">atividade</th>
+					<th scope="col">Tipo</th>
+					<th scope="col">Solicitante</th>
+					<th scope="col">Status</th>
+					<th scope="col">Ações</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for turma in turma_sem_responsavel_list %}
+	
+				<tr>
+					<th cope="row">{{turma.nome}}</th>
+					<td>
+						<a href="{% url 'atividade:atividade_detail' turma.atividade.id %}">
+							{{turma.atividade.nome}}
+						</a>
+					</td>
+					<td>{{turma.atividade.tipo_atividade}}</td>
+					<td>
+						{% if turma.atividade %}
+						<a href="{% url 'contas:solicitante_detail' turma.atividade.solicitante.id %}" class="btn">
+							{{turma.atividade.solicitante}}
+						</a>
+						{% endif %}
+					</td>
+					<td>{{turma.status}}</td>
+					<td>
+						<a href="{% url 'atividade:detalhar_turma' turma.id %}" class="btn btn-outline-primary btn-sm">
+							<i class="material-icons icone_pequeno">playlist_add</i> 
+						</a>
+					</td>
+				</tr>
+		
+			{% endfor %}      
+			</tbody>
+		</table>
+		
+		{% endif %}
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-12">
+		<div class="alert alert-secondary" role="alert">
+		<h5> Suportes do sistema</h5>
+			{% for suporte in suporte_list %}
+
+				<a href="{% url 'contas:suporte_detail' suporte.id %}" title="Click para detalhar suporte">
+						{{suporte}}		
+				<a>
+				<span title="quantidade de turmas sob responsabilidade" class="badge badge-secondary">{{suporte|qtd_turmas}}</span>
+				<br>
+
+			{% endfor %}
+		</div>
+
+	</div>
+</div>
+{% if bloqueada_list %}
+<div class="row">
+	<div class="col-md-12">
+		<span>Turmas bloqueadas</span>
+	</div>
+</div>
+<div class="row">
+{% for turma_bloq in bloqueada_list %}
+	<div class="col-md-2">
+		<a class="btn btn-danger" href="{% url 'atividade:detalhar_turma' turma_bloq.id %}">{{turma_bloq.nome}}</a>
+	</div>
+{% endfor %}
+</div>
+<br>
+{% endif %}
+
+<div class="row">
+	<div class="col-12">
+		<table class="table table-hover table-bordered table-sm table-responsive w-100 d-block d-md-table">
+			<thead class="tabela-cor-padrao">
+				<tr>
+					<th scope="col">Turmas Sob Minha Res.</th>
+					<th scope="col">Atividade/Disciplina</th>
+					<th scope="col">Tipo</th>
+					<th scope="col">Solicitante</th>
+					<th scope="col">Status</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for turma in object_list %}
+				<tr>
+					<th cope="row">
+						<a href="{% url 'atividade:detalhar_turma' turma.id %}" title="Detalhar Turma">
+							{{turma.nome}}		
+						</a>
+					</th>
+					<td>
+						<a href="{% url 'atividade:atividade_detail' turma.atividade.id %}" title="Detalhar Atividade/Disciplina">
+							{{turma.atividade.nome}}
+						</a>
+					</td>
+					<td>{{turma.atividade.tipo_atividade}}</td>
+					<td>
+					{% if turma.atividade %}
+						<a href="{% url 'contas:solicitante_detail' turma.atividade.solicitante.id %}" class="btn">
+							{{turma.atividade.solicitante}}
+						</a>
+					{% endif %}
+					</td>
+					<td>Turma - {{turma.status}}</td>
+					
+				</tr>
+			
+			{% endfor %}      
+			</tbody>
+		</table>
+	</div>
+</div>
+
+
+
+{% endblock %}
