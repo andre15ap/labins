@@ -5,7 +5,7 @@ Sistema desenvolvido na disciplina de Estágio Supervisionado.
 ##### Ferramentas utilizadas:
 * Python 3.6
 * Django 2.1
-* Myslq
+* Mysql
 
 ###### Pré-Requisitos
 Criar banco de dados mysql com nome "labins" com usuario e senha "admin" (ou alterar as configurações no settings.py). Se preferir criar ambiente virtual (Virtualenv)
